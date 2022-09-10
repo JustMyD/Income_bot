@@ -12,7 +12,12 @@ def new_user(user_id: str) -> bool:
     :return:
     """
     result = False
-    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost') as db_connect:
+    db_name = os.getenv('DATABASE_NAME')
+    db_user = os.getenv('DATABASE_USER')
+    db_pass = os.getenv('DATABASE_PASSWORD')
+    db_host = os.getenv('DATABASE_HOST')
+    db_port = os.getenv('DATABASE_PORT')
+    with ps.connect(database=db_name, user=db_user, password=db_pass, host=db_host, port=db_port) as db_connect:
         with db_connect.cursor() as db_cursor:
             users = []
             try:
