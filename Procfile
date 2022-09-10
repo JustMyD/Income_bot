@@ -1,1 +1,1 @@
-bot: python src/bot/start_bot
+bot: python src/bot/start_bot:start_webhook
