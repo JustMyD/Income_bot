@@ -1,5 +1,4 @@
 import os
-from asyncio import get_event_loop
 
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
@@ -15,10 +14,9 @@ WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
 WEBHOOK_PATH = ''
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
-event_loop = get_event_loop()
-storage = MemoryStorage()
 
-bot = Bot(token=API_TOKEN, loop=event_loop)
+bot = Bot(token=API_TOKEN)
+storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
 
 
