@@ -1,16 +1,3 @@
-import os
-
-from aiogram.dispatcher.webhook import get_new_configured_app
-from aiogram.utils.executor import start_webhook
-from aiohttp import web
-
-from src.bot.init_bot import dp, on_shutdown, on_startup, WEBHOOK_URL
-from src.bot.handlers import setup_dispatcher_handlers
-from src.bot.my_filters import setup_private_filter
-
-
-
-
 if __name__ == '__main__':
     pass
 

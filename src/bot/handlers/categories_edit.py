@@ -1,18 +1,3 @@
-from aiogram import types, Dispatcher
-from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import State, StatesGroup
-from ..keyboards.inline_keboards import callback_data
-
-from src.services.db import get_user_categories, update_user_categories
-from src.bot.keyboards.inline_keboards import categories_main_menu, categories_edit_menu
-from src.bot.init_bot import bot
-
-import time
-
-from ..keyboards.reply_keyboards import make_keyboard_reply
-
-
 # async def callback_edit_category(query: types.CallbackQuery):
 #     category_name = query.data.split(':')[-1]
 #     message_id = query.message.message_id

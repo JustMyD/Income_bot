@@ -1,5 +1,4 @@
 import time
-from typing import Union
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
@@ -9,7 +8,7 @@ from ..keyboards.inline_keboards import callback_data
 
 from src.services.db import get_user_categories, update_user_categories
 from src.bot.keyboards.inline_keboards import categories_main_menu, categories_edit_menu
-from src.bot.init_bot import bot
+from init_bot import bot
 
 
 class FSMIncomeCategoryAdd(StatesGroup):
