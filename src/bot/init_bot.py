@@ -1,14 +1,15 @@
 import os
+from asyncio import get_event_loop
 
+from aiogram import Bot, Dispatcher, types
+from aiogram.contrib.fsm_storage.memory import MemoryStorage
+from aiogram.dispatcher.filters import Text
 from dotenv import load_dotenv
 
-from asyncio import get_event_loop
-from aiogram import Bot, Dispatcher, types
-from aiogram.dispatcher.filters import Text
-from aiogram.contrib.fsm_storage.memory import MemoryStorage
-
-from src.services import user
+from src.bot.handlers import setup_dispatcher_handlers
 from src.bot.keyboards.reply_keyboards import make_keyboard_reply
+from src.bot.my_filters import setup_private_filter
+from src.services import user
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
@@ -21,7 +22,8 @@ storage = MemoryStorage()
 
 bot = Bot(token=API_TOKEN, loop=event_loop)
 dp = Dispatcher(bot, storage=storage)
-
+setup_dispatcher_handlers(dp)
+setup_private_filter(dp)
 
 @dp.message_handler(commands='start')
 async def greet_new_user(message: types.Message):
@@ -60,11 +62,19 @@ async def hide_keyboard(message: types.Message):
 
 
 async def on_startup(dp: Dispatcher):
-    await bot.set_webhook(WEBHOOK_URL)
+    webhook = await bot.get_webhook_info()
+    if webhook.url != WEBHOOK_URL:
+        if not webhook.url:
+            await bot.delete_webhook()
+
+        await bot.set_webhook(WEBHOOK_URL)
 
 
 async def on_shutdown(dp: Dispatcher):
-    print('Good Buy!!!')
+    await bot.delete_webhook()
+
+    await dp.storage.close()
+    await dp.storage.wait_closed()
 
 
 intro_message = '''
