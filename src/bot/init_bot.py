@@ -12,7 +12,7 @@ from src.services import user
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
 WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
-WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
+WEBHOOK_PATH = ''
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
 event_loop = get_event_loop()
