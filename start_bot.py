@@ -1,6 +1,6 @@
 import os
 
-from init_bot import dp, on_shutdown, on_startup
+from src.bot.init_bot import dp, on_shutdown, on_startup
 from aiogram.utils.executor import start_webhook
 from src.bot.init_bot import WEBHOOK_PATH
 
