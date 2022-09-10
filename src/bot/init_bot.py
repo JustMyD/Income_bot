@@ -4,6 +4,8 @@ from asyncio import get_event_loop
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters import Text
+from aiogram.dispatcher.webhook import get_new_configured_app
+from aiohttp import web
 from dotenv import load_dotenv
 
 from src.bot.handlers import setup_dispatcher_handlers
@@ -16,6 +18,7 @@ API_TOKEN = os.getenv('API_TOKEN')
 WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
 WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
+WEBAPP_HOST = os.getenv('WEBAPP_HOST')
 
 event_loop = get_event_loop()
 storage = MemoryStorage()
@@ -85,3 +88,9 @@ intro_message = '''
 отчетов и добавить новые категории расходов или доходов.
 Для вызова справки выберите команду /help из списка команд.
 '''
+
+if __name__ == '__main__':
+    app = get_new_configured_app(dispatcher=dp, path=WEBHOOK_URL)
+    app.on_startup.append(on_startup)
+    app.on_shutdown.append(on_shutdown)
+    web.run_app(app, host=WEBAPP_HOST)

@@ -1,1 +1,1 @@
-bot: python start_bot.py
+web: python init_bot.py
