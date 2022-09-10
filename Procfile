@@ -1,1 +1,1 @@
-bot: python start_bot
+web: gunicorn start_bot:start_webhook
