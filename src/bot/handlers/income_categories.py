@@ -8,7 +8,7 @@ from ..keyboards.inline_keboards import callback_data
 
 from src.services.db import get_user_categories, update_user_categories
 from src.bot.keyboards.inline_keboards import categories_main_menu, categories_edit_menu
-from init_bot import bot
+from src.bot.init_bot import bot
 
 
 class FSMIncomeCategoryAdd(StatesGroup):
