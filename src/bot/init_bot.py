@@ -6,9 +6,7 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters import Text
 from dotenv import load_dotenv
 
-from src.bot.handlers import setup_dispatcher_handlers
 from src.bot.keyboards.reply_keyboards import make_keyboard_reply
-from src.bot.my_filters import setup_private_filter
 from src.services import user
 
 load_dotenv()
@@ -23,8 +21,6 @@ storage = MemoryStorage()
 
 bot = Bot(token=API_TOKEN, loop=event_loop)
 dp = Dispatcher(bot, storage=storage)
-setup_dispatcher_handlers(dp)
-setup_private_filter(dp)
 
 
 @dp.message_handler(commands='start')

@@ -9,6 +9,8 @@ from src.bot.handlers import setup_dispatcher_handlers
 from src.bot.my_filters import setup_private_filter
 
 WEBAPP_HOST = os.getenv('WEBAPP_HOST')
+setup_dispatcher_handlers(dp)
+setup_private_filter(dp)
 
 
 if __name__ == '__main__':
