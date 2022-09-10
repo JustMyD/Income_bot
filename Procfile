@@ -1,1 +1,1 @@
-bot: python start_bot:start_webhook
+bot: python start_bot
