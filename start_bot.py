@@ -1,8 +1,7 @@
 import os
 
-from src.bot.init_bot import dp, on_shutdown, on_startup
+from src.bot.init_bot import dp, on_shutdown, on_startup, WEBHOOK_PATH
 from aiogram.utils.executor import start_webhook
-from src.bot.init_bot import WEBHOOK_PATH
 
 if __name__ == '__main__':
     WEBAPP_HOST = os.getenv('WEBAPP_HOST')
