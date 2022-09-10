@@ -10,8 +10,6 @@ setup_dispatcher_handlers(dp)
 setup_private_filter(dp)
 
 WEBHOOK_PATH = ''
-
-# webserver settings
 WEBAPP_HOST = '0.0.0.0'
 WEBAPP_PORT = os.getenv('PORT', default=8000)
 
