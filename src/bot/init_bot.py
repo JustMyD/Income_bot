@@ -14,7 +14,6 @@ API_TOKEN = os.getenv('API_TOKEN')
 WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
 WEBHOOK_PATH = os.getenv('WEBHOOK_PATH')
 WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
-WEBAPP_HOST = os.getenv('WEBAPP_HOST')
 
 event_loop = get_event_loop()
 storage = MemoryStorage()
@@ -59,20 +58,12 @@ async def hide_keyboard(message: types.Message):
     await message.answer(text='Удачного дня!', reply_markup=rm_keyboard)
 
 
-async def on_startup(dp: Dispatcher):
-    webhook = await bot.get_webhook_info()
-    if webhook.url != WEBHOOK_URL:
-        if not webhook.url:
-            await bot.delete_webhook()
-
-        await bot.set_webhook(WEBHOOK_URL)
+async def on_startup(dispatcher):
+    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
 
 
-async def on_shutdown(dp: Dispatcher):
+async def on_shutdown(dispatcher):
     await bot.delete_webhook()
-
-    await dp.storage.close()
-    await dp.storage.wait_closed()
 
 
 intro_message = '''
