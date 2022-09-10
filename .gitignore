@@ -1,0 +1,7 @@
+**/.pytest_cache
+
+test.json
+users.json
+chanels.json
+
+.env
