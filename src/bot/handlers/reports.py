@@ -8,7 +8,6 @@ from aiogram.dispatcher.filters import Text
 from src.bot.keyboards.reply_keyboards import make_keyboard_reply
 from src.bot.keyboards.keyboards_mapping import REPLY_KEYBOARDS_MSGS
 
-from src.bot.init_bot import dp
 from src.services.db import get_today_reports
 
 
@@ -35,15 +34,16 @@ async def report_state_period(message: types.Message, state=FSMContext):
     else:
         async with state.proxy() as data:
             data[message.text] = ''
-            dp.storage.data['period'] = message.text
-            dp.storage.data['test'] = 'Тестовое сообщение'
+            data['period'] = message.text
+            data['test'] = 'Тестовое сообщение'
         await FSMReports.next()
         rm_keyboard = types.ReplyKeyboardRemove()
         await message.answer(text=REPLY_KEYBOARDS_MSGS[message.text], reply_markup=rm_keyboard)
 
 
 async def report_state_period_value(message: types.Message, state=FSMContext):
-    period = dp.storage.data['period']
+    async with state.proxy() as data:
+        period = data['period']
     tmp = json.load(open('../../../test.json', 'r'))
     tmp['reports'][period] = message.text
     json.dump(tmp, open('../../../test.json', 'w'), ensure_ascii=False, indent=3)
