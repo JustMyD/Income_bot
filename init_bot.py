@@ -28,6 +28,7 @@ dp = Dispatcher(bot, storage=storage)
 setup_dispatcher_handlers(dp)
 setup_private_filter(dp)
 
+
 @dp.message_handler(commands='start')
 async def greet_new_user(message: types.Message):
     user_added = user.append_new_user(message.from_user)
