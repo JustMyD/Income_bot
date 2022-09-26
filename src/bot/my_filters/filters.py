@@ -54,6 +54,7 @@ class NotAdmin(BoundFilter):
 
         return user_id not in admins
 
+
 class LinkFilter(BoundFilter):
     link_template = re.compile(r'(?:https?:\/\/)?(?:[\w\.]+)\.(?:[a-z]{2,6}\.?)(?:\/[\w\.]*)*\/?')
     exclude_links = ['umma.ru']
@@ -68,7 +69,15 @@ class LinkFilter(BoundFilter):
                     break
         return has_html
 
+
 class NotPrivate(BoundFilter):
     async def check(self, message: types.Message):
         return message.chat.type != types.ChatType.PRIVATE
+
+
+class IsAlNum(BoundFilter):
+    async def check(self, message: types.Message):
+        return message.text.isalnum()
+
+
 #    types.MessageEntityType.URL

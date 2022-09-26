@@ -7,7 +7,8 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 from ..keyboards.inline_keboards import callback_data
 
 from src.services.db import get_user_categories, update_user_categories
-from src.bot.keyboards.inline_keboards import categories_main_menu, categories_edit_menu
+from src.bot.keyboards.inline_keboards import categories_main_menu, category_edit_menu
+from src.bot.my_filters import IsAlNum
 from src.bot.init_bot import bot
 
 
@@ -32,7 +33,7 @@ async def callback_edit_expense_category(query: types.CallbackQuery):
     category_name = query.data.split(':')[-1]
     message_id = query.message.message_id
     chat_id = query.message.chat.id
-    inline_message = categories_edit_menu(category_name, category_menu='expense_menu')
+    inline_message = category_edit_menu(category_name, category_menu='expense_menu')
     await bot.edit_message_text(chat_id=chat_id, text=f"Категория - {category_name}",
                                 message_id=message_id, reply_markup=inline_message)
 
@@ -146,4 +147,4 @@ def register_expense_categories_handlers(dp: Dispatcher):
 
     dp.register_callback_query_handler(callback_add_expense_category_start, callback_data['category'].filter(menu='expense_menu', action='add'),
                                        state=None)
-    dp.register_message_handler(callback_add_expense_category_end, state=FSMExpenseCategoryAdd.category_add)
+    dp.register_message_handler(callback_add_expense_category_end, IsAlNum(), state=FSMExpenseCategoryAdd.category_add)

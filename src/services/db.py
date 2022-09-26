@@ -1,3 +1,5 @@
+from functools import reduce
+
 import psycopg2 as ps
 import psycopg2.extras
 from sqlalchemy import create_engine
@@ -155,31 +157,38 @@ async def add_new_expense(user_id: int, expense_sum: int, category: str):
     return result
 
 
-async def get_today_reports(user_id: int):
-    # with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost') as db_connect:
-    #     with db_connect.cursor() as db_cursor:
-    #         db_cursor.execute('''
-    #         select * from telegram_bot.TodayIncome where user_id = %s
-    #         ''', (user_id, ))
-    #         today_income = db_cursor.fetchall()
-    #         print(today_income)
-    #         db_cursor.execute('''
-    #         select * from telegram_bot.TodayExpense where user_id = %s
-    #         ''', (user_id, ))
-    #         today_expense = db_cursor.fetchall()
-    #         print(today_expense)
-    db_uri = 'postgres+psycopg2://bot_user:1234@localhost/postgres'
-    engine = create_engine(db_uri, echo=True)
-    sql = (f'''
-    select * from telegram_bot.TodayIncome
-    where user_id = {user_id}
-    union all
-    select * from telegram_bot.TodayExpense
-    where user_id = {user_id}
-    ''')
-    df = pd.read_sql(sql, con=engine)
+async def get_today_reports(user_id: int) -> dict:
+    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost',
+                    cursor_factory=ps.extras.RealDictCursor) as db_connect:
+        with db_connect.cursor() as db_cursor:
+            db_cursor.execute('''
+            select income_sum from telegram_bot.TodayIncome where user_id = %s
+            ''', (user_id, ))
+            today_income = db_cursor.fetchall()
+            today_income = sum(map(lambda x: x['income_sum'], today_income))
+            db_cursor.execute('''
+            select * from telegram_bot.TodayExpense where user_id = %s
+            ''', (user_id, ))
+            today_expense = db_cursor.fetchall()
+            today_expense = sum(map(lambda x: x['expense_sum'], today_expense))
+            data = {
+                'today_income': today_income,
+                'today_expense': today_expense
+            }
+
+    return data
+    # db_uri = 'postgres+psycopg2://bot_user:1234@localhost/postgres'
+    # engine = create_engine(db_uri, echo=True)
+    # sql = (f'''
+    # select * from telegram_bot.TodayIncome
+    # where user_id = {user_id}
+    # union all
+    # select * from telegram_bot.TodayExpense
+    # where user_id = {user_id}
+    # ''')
+    # df = pd.read_sql(sql, con=engine)
     # df = df.rename(columns={'income_sum': 'Сумма', 'category': 'Категория'})
-    df.to_html(buf='test_html.html', encoding='utf-16', index=False)
+    # df.to_html(buf='tmp.html', encoding='utf-8', index=False)
 
 
 if __name__ == '__main__':
@@ -197,4 +206,4 @@ if __name__ == '__main__':
     #                 ''')
     # df = pd.read_sql(sql, con=engine)
     # df = df.rename(columns={'income_sum': 'Сумма', 'category': 'Категория'})
-    # df.to_html(buf='test_html.html', encoding='utf-16', index=False)
+    # df.to_html(buf='tmp.html', encoding='utf-16', index=False)

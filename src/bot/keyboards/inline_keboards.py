@@ -18,7 +18,7 @@ def categories_main_menu(categories: list, category_menu: str) -> types.InlineKe
     return inline_message
 
 
-def categories_edit_menu(category_name: str, category_menu: str) -> types.InlineKeyboardMarkup:
+def category_edit_menu(category_name: str, category_menu: str) -> types.InlineKeyboardMarkup:
     inline_message = types.InlineKeyboardMarkup(row_width=1, inline_keyboard=[
         # [types.InlineKeyboardButton(text='Изменить название',
         #                             callback_data=callback_data['category'].new(category_menu, 'rename', category_name))],

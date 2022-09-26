@@ -21,9 +21,10 @@ class FSMReports(StatesGroup):
 
 
 async def report_state_start(message: types.Message):
-    await FSMReports.report_period.set()
-    keyboard = make_keyboard_reply('Отчеты')
-    await message.answer(text='Выберите отчетный период', reply_markup=keyboard)
+    # await FSMReports.report_period.set()
+    # keyboard = make_keyboard_reply('Отчеты')
+    keyboard = make_keyboard_reply('Главное меню')
+    await message.answer(text='В разработке', reply_markup=keyboard)
 
 
 async def report_state_period(message: types.Message, state=FSMContext):
