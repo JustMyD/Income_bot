@@ -23,9 +23,9 @@ from src.services.db import get_today_reports
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
-# WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
-# WEBHOOK_PATH = ''
-# WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
+WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
+WEBHOOK_PATH = ''
+WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
 
 bot = Bot(token=API_TOKEN)
@@ -79,12 +79,13 @@ async def get_feedback(message: types.Message):
     # ToDo отправка feedback от пользователей мне на почту
     pass
 
-# async def on_startup(dispatcher):
-#     await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
-#
-#
-# async def on_shutdown(dispatcher):
-#     await bot.delete_webhook()
+
+async def on_startup(dispatcher):
+    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
+
+
+async def on_shutdown(dispatcher):
+    await bot.delete_webhook()
 
 
 intro_message = '''
