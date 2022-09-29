@@ -10,8 +10,8 @@ from src.bot.handlers import setup_dispatcher_handlers
 from src.bot.my_filters import setup_private_filters
 
 WEBHOOK_PATH = ''
-WEBAPP_HOST = '0.0.0.0'
-WEBAPP_PORT = os.getenv('PORT', default=8000)
+WEBAPP_HOST = os.getenv('WEBAPP_HOST', default='127.0.0.1')
+WEBAPP_PORT = os.getenv('PORT', default=8003)
 
 
 if __name__ == '__main__':
