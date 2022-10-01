@@ -1,7 +1,6 @@
-import os
+from config.configuration import DB_CONN
 
 import psycopg2 as ps
-
 from aiogram.types import base
 
 
@@ -12,7 +11,8 @@ def new_user(user_id: str) -> bool:
     :return:
     """
     result = False
-    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost') as db_connect:
+    with ps.connect(database=DB_CONN['db_name'], user=['db_user'],
+                    password=DB_CONN['db_pass'], host=DB_CONN['db_host']) as db_connect:
         with db_connect.cursor() as db_cursor:
             users = []
             try:
@@ -34,7 +34,8 @@ def append_new_user(user_data: base.TelegramObject) -> bool:
     :param user_data: Данные о пользователе
     :return: Результат работы
     """
-    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost') as db_connect:
+    with ps.connect(database=DB_CONN['db_name'], user=['db_user'],
+                    password=DB_CONN['db_pass'], host=DB_CONN['db_host']) as db_connect:
         with db_connect.cursor() as db_cursor:
             is_new_user = new_user(str(user_data.id))
             if is_new_user:
