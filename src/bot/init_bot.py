@@ -16,16 +16,16 @@ from aiogram.contrib.fsm_storage.memory import MemoryStorage
 from aiogram.dispatcher.filters import Text
 from dotenv import load_dotenv
 
-from src.bot.keyboards.reply_keyboards import make_keyboard_reply
-from src.services import user
-from src.services.db import get_today_reports
+from bot.keyboards.reply_keyboards import make_keyboard_reply
+from services import user
+from services.db import get_today_reports
 
 
 load_dotenv()
 API_TOKEN = os.getenv('API_TOKEN')
-WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
-WEBHOOK_PATH = ''
-WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
+#WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
+#WEBHOOK_PATH = ''
+#WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
 
 
 bot = Bot(token=API_TOKEN)
@@ -80,12 +80,12 @@ async def get_feedback(message: types.Message):
     pass
 
 
-async def on_startup(dispatcher):
-    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
-
-
-async def on_shutdown(dispatcher):
-    await bot.delete_webhook()
+#async def on_startup(dispatcher):
+#    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
+#
+#
+#async def on_shutdown(dispatcher):
+#    await bot.delete_webhook()
 
 
 intro_message = '''
