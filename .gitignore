@@ -5,3 +5,5 @@ users.json
 chanels.json
 
 .env
+
+__pycache___
