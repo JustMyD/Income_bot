@@ -17,12 +17,11 @@ from aiogram.dispatcher.filters import Text
 from dotenv import load_dotenv
 
 from bot.keyboards.reply_keyboards import make_keyboard_reply
+from config.configuration import API_TOKEN
 from services import user
 from services.db import get_today_reports
 
 
-load_dotenv()
-API_TOKEN = os.getenv('API_TOKEN')
 #WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
 #WEBHOOK_PATH = ''
 #WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
