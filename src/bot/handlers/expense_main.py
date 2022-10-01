@@ -3,9 +3,9 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text, Regexp
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-from src.bot.keyboards.inline_keboards import callback_data, categories_main_menu
-from src.bot.keyboards.reply_keyboards import make_keyboard_reply
-from src.services.db import add_new_expense, get_user_categories
+from bot.keyboards.inline_keboards import callback_data, categories_main_menu
+from bot.keyboards.reply_keyboards import make_keyboard_reply
+from services.db import add_new_expense, get_user_categories
 
 
 class FSMExpense(StatesGroup):

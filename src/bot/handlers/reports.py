@@ -5,10 +5,10 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 
-from src.bot.keyboards.reply_keyboards import make_keyboard_reply
-from src.bot.keyboards.keyboards_mapping import REPLY_KEYBOARDS_MSGS
+from bot.keyboards.reply_keyboards import make_keyboard_reply
+from bot.keyboards.keyboards_mapping import REPLY_KEYBOARDS_MSGS
 
-from src.services.db import get_today_reports
+from services.db import get_today_reports
 
 
 async def get_today_report(message: types.Message):

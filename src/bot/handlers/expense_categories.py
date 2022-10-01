@@ -6,10 +6,10 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from ..keyboards.inline_keboards import callback_data
 
-from src.services.db import get_user_categories, update_user_categories
-from src.bot.keyboards.inline_keboards import categories_main_menu, category_edit_menu
-from src.bot.my_filters import IsAlNum
-from src.bot.init_bot import bot
+from services.db import get_user_categories, update_user_categories
+from bot.keyboards.inline_keboards import categories_main_menu, category_edit_menu
+from bot.my_filters import IsAlNum
+from bot.init_bot import bot
 
 
 class FSMExpenseCategoryAdd(StatesGroup):
