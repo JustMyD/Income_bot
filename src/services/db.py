@@ -1,4 +1,5 @@
 from functools import reduce
+from config.configuration import DB_CONN
 
 import psycopg2 as ps
 import psycopg2.extras
@@ -17,7 +18,8 @@ def get_user_categories(user_id: int, type: str) -> str:
     :return: Список категорий
     """
     categories = ''
-    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost') as db_connect:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
+                    password=DB_CONN['db_pass'], host=DB_CONN['db_host'], port=DB_CONN['db_port']) as db_connect:
         with db_connect.cursor() as db_cursor:
             try:
                 if type == 'income':
@@ -45,7 +47,8 @@ async def update_user_categories(user_id: int, categories: str, type: str) -> bo
     :return:
     """
     categories_updated = False
-    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost') as db_connect:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
+                    password=DB_CONN['db_pass'], host=DB_CONN['db_host'], port=DB_CONN['db_port']) as db_connect:
         with db_connect.cursor() as db_cursor:
             try:
                 if type == 'income':
@@ -71,8 +74,9 @@ async def add_new_income(user_id: int, income_sum: int, category: str):
     :param category: Категория
     :return: Результат работы
     """
-    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost',
-                    cursor_factory=ps.extras.RealDictCursor) as db_connect:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
+                    password=DB_CONN['db_pass'], host=DB_CONN['db_host'],
+                    port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
             result = 'Не добавлен'
             current_date_time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
@@ -118,8 +122,9 @@ async def add_new_expense(user_id: int, expense_sum: int, category: str):
     :param category: Категория
     :return: Результат работы
     """
-    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost',
-                    cursor_factory=ps.extras.RealDictCursor) as db_connect:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
+                    password=DB_CONN['db_pass'], host=DB_CONN['db_host'],
+                    port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
             result = 'Не добавлен'
             current_date_time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
@@ -158,8 +163,9 @@ async def add_new_expense(user_id: int, expense_sum: int, category: str):
 
 
 async def get_today_reports(user_id: int) -> dict:
-    with ps.connect(database='postgres', user='bot_user', password=1234, host='localhost',
-                    cursor_factory=ps.extras.RealDictCursor) as db_connect:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
+                    password=DB_CONN['db_pass'], host=DB_CONN['db_host'], 
+                    port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
             db_cursor.execute('''
             select income_sum from telegram_bot.TodayIncome where user_id = %s

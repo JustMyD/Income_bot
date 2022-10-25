@@ -1,4 +1,5 @@
 #!/bin/bash
-cd /home/www/Bot_projects/Income_bot/src
-source ../env/bin/activate
-python3 income_bot.py
+cd /home/www/Bot_projects/Income_bot
+source /home/www/.virtualenvs/income_bot/bin/activate
+pip list
+python3 src/income_bot.py

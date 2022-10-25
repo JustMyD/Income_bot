@@ -17,15 +17,12 @@ from aiogram.dispatcher.filters import Text
 from dotenv import load_dotenv
 
 from bot.keyboards.reply_keyboards import make_keyboard_reply
-from config.configuration import API_TOKEN
+from config.configuration import API_TOKEN 
 from services import user
 from services.db import get_today_reports
 
-
 #WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
-#WEBHOOK_PATH = ''
-#WEBHOOK_URL = f'{WEBHOOK_HOST}{WEBHOOK_PATH}'
-
+WEBHOOK_HOST = 'https://tuttodorondo.ru'
 
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
@@ -79,12 +76,13 @@ async def get_feedback(message: types.Message):
     pass
 
 
-#async def on_startup(dispatcher):
-#    await bot.set_webhook(WEBHOOK_URL, drop_pending_updates=True)
-#
-#
-#async def on_shutdown(dispatcher):
-#    await bot.delete_webhook()
+async def on_startup(dispatcher):
+    await bot.set_webhook(WEBHOOK_HOST)
+
+
+async def on_shutdown(dispatcher):
+    await bot.delete_webhook()
+    quit()
 
 
 intro_message = '''

@@ -2,6 +2,7 @@ from config.configuration import DB_CONN
 
 import psycopg2 as ps
 from aiogram.types import base
+import json 
 
 
 def new_user(user_id: str) -> bool:
@@ -11,8 +12,10 @@ def new_user(user_id: str) -> bool:
     :return:
     """
     result = False
-    with ps.connect(database=DB_CONN['db_name'], user=['db_user'],
-                    password=DB_CONN['db_pass'], host=DB_CONN['db_host']) as db_connect:
+    print(DB_CONN)
+    #json.dump(DB_CONN, open('/home/www/Bot_projects/Income_bot/test.json', 'w'))
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
+                    password=DB_CONN['db_pass'], host=DB_CONN['db_host'], port=DB_CONN['db_port']) as db_connect:
         with db_connect.cursor() as db_cursor:
             users = []
             try:
@@ -34,7 +37,7 @@ def append_new_user(user_data: base.TelegramObject) -> bool:
     :param user_data: Данные о пользователе
     :return: Результат работы
     """
-    with ps.connect(database=DB_CONN['db_name'], user=['db_user'],
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
                     password=DB_CONN['db_pass'], host=DB_CONN['db_host']) as db_connect:
         with db_connect.cursor() as db_cursor:
             is_new_user = new_user(str(user_data.id))
