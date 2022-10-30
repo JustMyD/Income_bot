@@ -24,13 +24,13 @@ def get_user_categories(user_id: int, type: str) -> str:
             try:
                 if type == 'income':
                     db_cursor.execute('''
-                    select categories_income from telegram_bot.Users 
-                    where telegramid = %s
+                    select categories_income from income_bot.users 
+                    where telegram_id = %s
                     ''', (str(user_id), ))
                 elif type == 'expense':
                     db_cursor.execute('''
-                    select categories_expense from telegram_bot.Users 
-                    where telegramid = %s
+                    select categories_expense from income_bot.users 
+                    where telegram_id = %s
                     ''', (str(user_id), ))
                 categories = db_cursor.fetchone()[0]
             except Exception as e:
@@ -53,11 +53,11 @@ async def update_user_categories(user_id: int, categories: str, type: str) -> bo
             try:
                 if type == 'income':
                     db_cursor.execute('''
-                    update telegram_bot.Users set categories_income = %s where telegramid = %s
+                    update income_bot.users set categories_income = %s where telegram_id = %s
                     ''', (categories, str(user_id)))
                 elif type == 'expense':
                     db_cursor.execute('''
-                    update telegram_bot.Users set categories_expense = %s where telegramid = %s
+                    update income_bot.users set categories_expense = %s where telegram_id = %s
                     ''', (categories, str(user_id)))
                 categories_updated = True
             except Exception as e:
@@ -80,37 +80,38 @@ async def add_new_income(user_id: int, income_sum: int, category: str):
         with db_connect.cursor() as db_cursor:
             result = 'Не добавлен'
             current_date_time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
-            today_user_incomes = None
+            # today_user_incomes = None
+            # try:
+            #     db_cursor.execute('''
+            #     select * from income_bot.today_income
+            #     where user_id = %s and category = %s
+            #     ''', (user_id, category))
+            #     today_user_incomes = db_cursor.fetchone()
+            # except Exception as e:
+            #     print(e)             # todo ДОбавить логер
+            #     result = 'Произошла ошибка, попробуйте снова'
+            # if today_user_incomes:
+            #     try:
+            #         db_cursor.execute('''
+            #         update income_bot.today_income
+            #         set income_sum = income_sum + %s,
+            #         updated_at = %s
+            #         where user_id = %s and category = %s
+            #         ''', (income_sum, current_date_time, user_id, category))
+            #         result = 'Добавлен'
+            #     except Exception as e:
+            #         print(e)             # todo ДОбавить логер
+            #         result = 'Произошла ошибка, попробуйте снова'
+            # else:
             try:
-                db_cursor.execute('''
-                select * from telegram_bot.TodayIncome where user_id = %s and category = %s
-                ''', (user_id, category))
-                today_user_incomes = db_cursor.fetchone()
+                db_cursor.execute("""
+                insert into income_bot.today_income (user_id, income_sum, category, created_at, updated_at)
+                values (%s, %s, %s, %s, %s)
+                """, (user_id, income_sum, category, current_date_time, current_date_time))
+                result = 'Добавлен'
             except Exception as e:
-                print(e)             # todo ДОбавить логер
+                print(e)         # todo ДОбавить логер
                 result = 'Произошла ошибка, попробуйте снова'
-            if today_user_incomes:
-                try:
-                    db_cursor.execute('''
-                    update telegram_bot.TodayIncome
-                    set income_sum = income_sum + %s,
-                    updated_at = %s
-                    where user_id = %s and category = %s
-                    ''', (income_sum, current_date_time, user_id, category))
-                    result = 'Добавлен'
-                except Exception as e:
-                    print(e)             # todo ДОбавить логер
-                    result = 'Произошла ошибка, попробуйте снова'
-            else:
-                try:
-                    db_cursor.execute("""
-                    insert into telegram_bot.TodayIncome (user_id, income_sum, category, created_at, updated_at)
-                    values (%s, %s, %s, %s, %s)
-                    """, (user_id, income_sum, category, current_date_time, current_date_time))
-                    result = 'Добавлен'
-                except Exception as e:
-                    print(e)         # todo ДОбавить логер
-                    result = 'Произошла ошибка, попробуйте снова'
     return result
 
 
@@ -128,37 +129,37 @@ async def add_new_expense(user_id: int, expense_sum: int, category: str):
         with db_connect.cursor() as db_cursor:
             result = 'Не добавлен'
             current_date_time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
-            today_user_expense = None
+            # today_user_expense = None
+            # try:
+            #     db_cursor.execute('''
+            #     select * from telegram_bot.TodayExpense where user_id = %s and category = %s
+            #     ''', (user_id, category))
+            #     today_user_expense = db_cursor.fetchone()
+            # except Exception as e:
+            #     print(e)           # todo Добавить логер
+            #     result = 'Произошла ошибка, попробуйте снова'
+            # if today_user_expense:
+            #     try:
+            #         db_cursor.execute('''
+            #         update telegram_bot.TodayExpense
+            #         set expense_sum = expense_sum + %s,
+            #         updated_at = %s
+            #         where user_id = %s and category = %s
+            #         ''', (expense_sum, current_date_time, user_id, category))
+            #         result = 'Добавлен'
+            #     except Exception as e:
+            #         print(e)          # todo ДОбавить логер
+            #         result = 'Произошла ошибка, попробуйте снова'
+            # else:
             try:
-                db_cursor.execute('''
-                select * from telegram_bot.TodayExpense where user_id = %s and category = %s
-                ''', (user_id, category))
-                today_user_expense = db_cursor.fetchone()
+                db_cursor.execute("""
+                insert into income_bot.today_expense (user_id, expense_sum, category, created_at, updated_at)
+                values (%s, %s, %s, %s, %s)
+                """, (user_id, expense_sum, category, current_date_time, current_date_time))
+                result = 'Добавлен'
             except Exception as e:
-                print(e)           # todo Добавить логер
+                print(e)            # todo Добавить логер
                 result = 'Произошла ошибка, попробуйте снова'
-            if today_user_expense:
-                try:
-                    db_cursor.execute('''
-                    update telegram_bot.TodayExpense
-                    set expense_sum = expense_sum + %s,
-                    updated_at = %s
-                    where user_id = %s and category = %s
-                    ''', (expense_sum, current_date_time, user_id, category))
-                    result = 'Добавлен'
-                except Exception as e:
-                    print(e)          # todo ДОбавить логер
-                    result = 'Произошла ошибка, попробуйте снова'
-            else:
-                try:
-                    db_cursor.execute("""
-                    insert into telegram_bot.TodayExpense (user_id, expense_sum, category, created_at, updated_at)
-                    values (%s, %s, %s, %s, %s)
-                    """, (user_id, expense_sum, category, current_date_time, current_date_time))
-                    result = 'Добавлен'
-                except Exception as e:
-                    print(e)            # todo Добавить логер
-                    result = 'Произошла ошибка, попробуйте снова'
     return result
 
 
@@ -168,12 +169,12 @@ async def get_today_reports(user_id: int) -> dict:
                     port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
             db_cursor.execute('''
-            select income_sum from telegram_bot.TodayIncome where user_id = %s
+            select income_sum from income_bot.today_income where user_id = %s
             ''', (user_id, ))
             today_income = db_cursor.fetchall()
             today_income = sum(map(lambda x: x['income_sum'], today_income))
             db_cursor.execute('''
-            select * from telegram_bot.TodayExpense where user_id = %s
+            select * from income_bot.today_expense where user_id = %s
             ''', (user_id, ))
             today_expense = db_cursor.fetchall()
             today_expense = sum(map(lambda x: x['expense_sum'], today_expense))
