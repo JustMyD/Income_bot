@@ -163,7 +163,7 @@ async def add_new_expense(user_id: int, expense_sum: int, category: str):
     return result
 
 
-async def get_today_reports(user_id: int) -> dict:
+async def get_today_reports_test(user_id: int) -> dict:
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
                     password=DB_CONN['db_pass'], host=DB_CONN['db_host'], 
                     port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
@@ -196,6 +196,24 @@ async def get_today_reports(user_id: int) -> dict:
     # df = pd.read_sql(sql, con=engine)
     # df = df.rename(columns={'income_sum': 'Сумма', 'category': 'Категория'})
     # df.to_html(buf='tmp.html', encoding='utf-8', index=False)
+
+
+async def get_today_report(user_id: str, report_type: str):
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
+                    host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
+        with db_connect.cursor() as db_cursor:
+            if report_type == 'income':
+                db_cursor.execute('''
+                select today_sum from income_bot.today_income
+                where user_id = %s
+                ''', (user_id, ))
+            elif report_type == 'expense':
+                db_cursor.execute('''
+                select today_sum from income_bot.today_expense
+                where user_id = %s
+                ''', (user_id, ))
+            result = db_cursor.fetchall()
+            return result
 
 
 if __name__ == '__main__':

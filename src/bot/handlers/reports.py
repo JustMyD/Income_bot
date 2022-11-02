@@ -8,11 +8,7 @@ from aiogram.dispatcher.filters import Text
 from bot.keyboards.reply_keyboards import make_keyboard_reply
 from bot.keyboards.keyboards_mapping import REPLY_KEYBOARDS_MSGS
 
-from services.db import get_today_reports
-
-
-async def get_today_report(message: types.Message):
-    await get_today_reports(message.from_user.id)
+from services.db import get_today_report
 
 
 class FSMReports(StatesGroup):
@@ -21,38 +17,26 @@ class FSMReports(StatesGroup):
 
 
 async def report_state_start(message: types.Message):
-    # await FSMReports.report_period.set()
-    # keyboard = make_keyboard_reply('Отчеты')
-    keyboard = make_keyboard_reply('Главное меню')
-    await message.answer(text='В разработке', reply_markup=keyboard)
+    keyboard = make_keyboard_reply('Отчеты')
+    await message.answer(text=REPLY_KEYBOARDS_MSGS[message.text], reply_markup=keyboard)
 
 
-async def report_state_period(message: types.Message, state=FSMContext):
-    if message.text == 'Главное меню':
-        await state.finish()
-        keyboard = make_keyboard_reply(keyboard_level=message.text)
-        await message.answer(text=REPLY_KEYBOARDS_MSGS[message.text], reply_markup=keyboard)
-    else:
-        async with state.proxy() as data:
-            data[message.text] = ''
-            data['period'] = message.text
-            data['test'] = 'Тестовое сообщение'
-        await FSMReports.next()
-        rm_keyboard = types.ReplyKeyboardRemove()
-        await message.answer(text=REPLY_KEYBOARDS_MSGS[message.text], reply_markup=rm_keyboard)
+async def show_today_report(message: types.Message):
+    report = await get_today_report(user_id=str(message.from_user.id), report_type='income')
+    print(report)
 
 
-async def report_state_period_value(message: types.Message, state=FSMContext):
-    async with state.proxy() as data:
-        period = data['period']
-    tmp = json.load(open('../../../test.json', 'r'))
-    tmp['reports'][period] = message.text
-    json.dump(tmp, open('../../../test.json', 'w'), ensure_ascii=False, indent=3)
-    await state.finish()
+async def show_weekly_report(message: types.Message):
+    pass
+
+
+async def show_monthly_report(message: types.Message):
+    pass
 
 
 def register_handlers_report(dp: Dispatcher):
-    dp.register_message_handler(get_today_report, Text('Отчет за сегодня'))
-    dp.register_message_handler(report_state_start, Text('Отчеты'), state=None)
-    dp.register_message_handler(report_state_period, state=FSMReports.report_period)
-    dp.register_message_handler(report_state_period_value, state=FSMReports.report_state_period_value)
+    dp.register_message_handler(report_state_start, Text('Отчеты'))
+
+    dp.register_message_handler(show_today_report, Text('Отчет за сегодня'))
+    dp.register_message_handler(show_weekly_report, Text('За текущую неделю'))
+    dp.register_message_handler(show_monthly_report, Text('За текущий месяц'))
