@@ -55,7 +55,8 @@ async def callback_remove_income_category(query: types.CallbackQuery):
 async def callback_add_income_category_start(query: types.CallbackQuery, state: FSMContext):
     await FSMIncomeCategoryAdd.category_add.set()
     chat_id = query.message.chat.id
-    message = await bot.send_message(chat_id=chat_id, text='Введите название категории')
+    keyboard = types.ReplyKeyboardRemove()
+    message = await bot.send_message(chat_id=chat_id, text='Введите название категории', reply_markup=keyboard)
     async with state.proxy() as data:
         data['first_user_msg_id'] = message.message_id
         data['inline_message_id'] = query.message.message_id
@@ -63,6 +64,7 @@ async def callback_add_income_category_start(query: types.CallbackQuery, state: 
 
 async def callback_add_income_category_end(message: types.Message, state: FSMContext):
     category_name = message.text
+    category_name = category_name.replace(',', ';')
     chat_id = message.chat.id
     last_user_msg = message.message_id
     if len(category_name) > 25:
@@ -113,4 +115,4 @@ def register_income_categories_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(callback_add_income_category_start,
                                        callback_data['category'].filter(menu='income_menu', action='add'),
                                        state=None)
-    dp.register_message_handler(callback_add_income_category_end, IsAlNum(), state=FSMIncomeCategoryAdd.category_add)
+    dp.register_message_handler(callback_add_income_category_end, state=FSMIncomeCategoryAdd.category_add)

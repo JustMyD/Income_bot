@@ -59,7 +59,8 @@ async def callback_remove_expense_category(query: types.CallbackQuery):
 async def callback_add_expense_category_start(query: types.CallbackQuery, state: FSMContext):
     await FSMExpenseCategoryAdd.category_add.set()
     chat_id = query.message.chat.id
-    message = await bot.send_message(chat_id=chat_id, text='Введите название категории', reply_markup=types.ReplyKeyboardRemove())
+    keyboard = types.ReplyKeyboardRemove()
+    message = await bot.send_message(chat_id=chat_id, text='Введите название категории', reply_markup=keyboard)
     async with state.proxy() as data:
         data['user_message_id'] = message.message_id
         data['inline_message_id'] = query.message.message_id
@@ -67,6 +68,7 @@ async def callback_add_expense_category_start(query: types.CallbackQuery, state:
 
 async def callback_add_expense_category_end(message: types.Message, state: FSMContext):
     category_name = message.text
+    category_name = category_name.replace(',', ';')
     chat_id = message.chat.id
     if len(category_name) > 25:
         await message.answer(text='Слишком длинное название категории')
@@ -147,4 +149,4 @@ def register_expense_categories_handlers(dp: Dispatcher):
 
     dp.register_callback_query_handler(callback_add_expense_category_start, callback_data['category'].filter(menu='expense_menu', action='add'),
                                        state=None)
-    dp.register_message_handler(callback_add_expense_category_end, IsAlNum(), state=FSMExpenseCategoryAdd.category_add)
+    dp.register_message_handler(callback_add_expense_category_end, state=FSMExpenseCategoryAdd.category_add)

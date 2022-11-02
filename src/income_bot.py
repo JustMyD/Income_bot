@@ -1,5 +1,3 @@
-#!/home/www/.virtualenvs/income_bot/bin/python
-
 import os
 
 from aiogram.utils.executor import start_webhook
