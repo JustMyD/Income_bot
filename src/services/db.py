@@ -7,7 +7,7 @@ from sqlalchemy import create_engine
 import pandas as pd
 
 import os
-from datetime import datetime
+import datetime as dt
 
 
 def get_user_categories(user_id: int, type: str) -> str:
@@ -79,7 +79,7 @@ async def add_new_income(user_id: int, income_sum: int, category: str):
                     port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
             result = 'Не добавлен'
-            current_date_time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
+            current_date_time = dt.datetime.strftime(dt.datetime.now(), "%Y-%m-%d %H:%M")
             # today_user_incomes = None
             # try:
             #     db_cursor.execute('''
@@ -128,7 +128,7 @@ async def add_new_expense(user_id: int, expense_sum: int, category: str):
                     port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
             result = 'Не добавлен'
-            current_date_time = datetime.strftime(datetime.now(), "%Y-%m-%d %H:%M")
+            current_date_time = dt.datetime.strftime(dt.datetime.now(), "%Y-%m-%d %H:%M")
             # today_user_expense = None
             # try:
             #     db_cursor.execute('''
@@ -198,22 +198,60 @@ async def get_today_reports_test(user_id: int) -> dict:
     # df.to_html(buf='tmp.html', encoding='utf-8', index=False)
 
 
-async def get_today_report(user_id: str, report_type: str):
+async def get_today_report(user_id: str, report_type: str, msg_template: str):
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
                     host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
             if report_type == 'income':
                 db_cursor.execute('''
-                select today_sum from income_bot.today_income
+                select income_sum, category from income_bot.today_income
                 where user_id = %s
                 ''', (user_id, ))
             elif report_type == 'expense':
                 db_cursor.execute('''
-                select today_sum from income_bot.today_expense
+                select expense_sum, category from income_bot.today_expense
                 where user_id = %s
                 ''', (user_id, ))
             result = db_cursor.fetchall()
-            return result
+            average_sum = 0
+            for expense in result:
+                average_sum += int(expense['expense_sum'])
+            if average_sum != 0:
+                msg_template += '\n Траты по категориям:'
+                for expense in result:
+                    msg_template += f'\n{expense["category"]} - {expense["expense_sum"]}'
+            msg_template = msg_template.format(average_sum=average_sum)
+
+            return msg_template
+
+
+async def get_weekly_report(user_id: str, report_type: str) -> str:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
+                    host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
+        with db_connect.cursor() as db_cursor:
+            last_week_date = dt.datetime.now().date() - dt.timedelta(days=4)
+            if report_type == 'income':
+                db_cursor.execute('''
+                select income_sum, category from income_bot.all_income
+                where user_id = %s
+                ''', (user_id, ))
+            elif report_type == 'expense':
+                db_cursor.execute('''
+                select expense_sum, category from income_bot.all_expense
+                where user_id = %s and created_at >= %s
+                ''', (user_id, last_week_date))
+            result = db_cursor.fetchall()
+            out_msg = '''
+            Всего траты за неделю: {average_sum}
+            Траты по категориям:
+            '''
+            average_sum = 0
+            for expense in result:
+                average_sum += int(expense['expense_sum'])
+                out_msg += f'\n{expense["category"]} - {expense["expense_sum"]}'
+            out_msg = out_msg.format(average_sum=average_sum)
+
+            return out_msg
 
 
 if __name__ == '__main__':
