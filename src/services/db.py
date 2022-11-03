@@ -219,11 +219,11 @@ async def get_today_report(user_id: str, report_type: str, msg_template: str):
             msg_template += str(average_sum)
             if average_sum != 0:
                 if report_type == 'income':
-                    msg_template += '\n Доходы по категориям:'
+                    msg_template += '\nДоходы по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["income_sum"]}'
                 else:
-                    msg_template += '\n Траты по категориям:'
+                    msg_template += '\nТраты по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
 
@@ -252,11 +252,11 @@ async def get_weekly_report(user_id: str, report_type: str, msg_template: str) -
             msg_template += str(average_sum)
             if average_sum != 0:
                 if report_type == 'income':
-                    msg_template += '\n Доходы по категориям:'
+                    msg_template += '\nДоходы по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["income_sum"]}'
                 else:
-                    msg_template += '\n Траты по категориям:'
+                    msg_template += '\nТраты по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
 
@@ -285,11 +285,11 @@ async def get_monthly_report(user_id: str, report_type: str, msg_template: str) 
             msg_template += str(average_sum)
             if average_sum != 0:
                 if report_type == 'income':
-                    msg_template += '\n Доходы по категориям:'
+                    msg_template += '\nДоходы по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["income_sum"]}'
                 else:
-                    msg_template += '\n Траты по категориям:'
+                    msg_template += '\nТраты по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
 
