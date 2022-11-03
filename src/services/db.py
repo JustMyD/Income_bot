@@ -216,6 +216,7 @@ async def get_today_report(user_id: str, report_type: str, msg_template: str):
                 msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
             average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
+            msg_template += str(average_sum)
             if average_sum != 0:
                 if report_type == 'income':
                     msg_template += '\n Доходы по категориям:'
@@ -225,7 +226,6 @@ async def get_today_report(user_id: str, report_type: str, msg_template: str):
                     msg_template += '\n Траты по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
-            msg_template = msg_template.format(average_sum=average_sum)
 
             return msg_template
 
@@ -249,6 +249,7 @@ async def get_weekly_report(user_id: str, report_type: str, msg_template: str) -
                 msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
             average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
+            msg_template += str(average_sum)
             if average_sum != 0:
                 if report_type == 'income':
                     msg_template += '\n Доходы по категориям:'
@@ -258,7 +259,6 @@ async def get_weekly_report(user_id: str, report_type: str, msg_template: str) -
                     msg_template += '\n Траты по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
-            msg_template = msg_template.format(average_sum=average_sum)
 
             return msg_template
 
@@ -282,6 +282,7 @@ async def get_monthly_report(user_id: str, report_type: str, msg_template: str) 
                 msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
             average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
+            msg_template += str(average_sum)
             if average_sum != 0:
                 if report_type == 'income':
                     msg_template += '\n Доходы по категориям:'
@@ -291,7 +292,6 @@ async def get_monthly_report(user_id: str, report_type: str, msg_template: str) 
                     msg_template += '\n Траты по категориям:'
                     for elem in result:
                         msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
-            msg_template = msg_template.format(average_sum=average_sum)
 
             return msg_template
 

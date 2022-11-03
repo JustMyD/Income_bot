@@ -10,17 +10,11 @@ from bot.keyboards.keyboards_mapping import REPLY_KEYBOARDS_MSGS
 
 from services.db import get_today_report, get_weekly_report, get_monthly_report
 
-today_report_template = '''
-Всего {kind} за сегодня: {average_sum}
-'''
+today_report_template = 'Всего {kind} за сегодня: '
 
-weekly_report_template = '''
-Всего {kind} за неделю: {average_sum}
-'''
+weekly_report_template = 'Всего {kind} за неделю: '
 
-monthly_report_template = '''
-Всего {kind} за месяц: {average_sum}
-'''
+monthly_report_template = 'Всего {kind} за месяц: '
 
 
 class FSMReports(StatesGroup):
