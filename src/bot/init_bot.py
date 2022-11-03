@@ -36,6 +36,7 @@ async def greet_new_user(message: types.Message):
     else:
         greeting_message = f'Привет {message.from_user.full_name}'
     keyboard = make_keyboard_reply(keyboard_level='Главное меню')
+    await message.answer(text=intro_message)
     await message.answer(text=greeting_message, reply_markup=keyboard)
 
 
@@ -53,7 +54,7 @@ async def main_menu(message: types.Message):
 
 @dp.message_handler(commands='help')
 async def show_help(message: types.Message):
-    await message.answer(text=intro_message)
+    await message.answer(text=reference_msg)
 
 
 @dp.message_handler(commands='main')
@@ -78,15 +79,16 @@ async def on_shutdown(dispatcher):
 
 
 intro_message = '''
-Для того чтобы внести новый расход или 
-доход за сегодня просто нажмите соответствующую 
-кнопку и следуйте дальнейшим инструкциям.
-В разделе настроек вы можете настроить получение 
-отчетов и добавить новые категории расходов или доходов.
-Для вызова справки выберите команду /help из списка команд.
+Для того чтобы открыть список команд бота воспользуйтесь кнопкой меню, она находится слева в строке ввода текста.
+Если вы столкнулись с трудностью - команда /help открывает справку
+Если хотите оставить пожелание или дать обратную связь - команда /feedback оставить анонимный отзыв 
 '''
 
-report_message = '''
-Получено за сегодня: {income_sum}
-Потрачено за сегодня: {expense_sum}
+reference_msg = '''
+Чтобы открыть главное меню - выберите из списка команд /main
+Добавить приход - Главное меню -> Приход
+Добавить расход - Главное меню -> Расход
+Получить отчет за период - Главное меню -> Настройки -> Отчеты
+Добавить или удалить категории для прихода - Главное меню -> Настройки -> Категории прихода
+Добавить или удалить категории для расхода - Главное меню -> Настройки -> Категории расхода
 '''
