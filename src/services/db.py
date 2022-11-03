@@ -207,13 +207,13 @@ async def get_today_report(user_id: str, report_type: str, msg_template: str):
                 select income_sum, category from income_bot.today_income
                 where user_id = %s
                 ''', (user_id, ))
-                msg_template = msg_template.format(type='доходы')
+                msg_template = msg_template.format(kind='доходы')
             elif report_type == 'expense':
                 db_cursor.execute('''
                 select expense_sum, category from income_bot.today_expense
                 where user_id = %s
                 ''', (user_id, ))
-                msg_template = msg_template.format(type='траты')
+                msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
             average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
             if average_sum != 0:
@@ -240,13 +240,13 @@ async def get_weekly_report(user_id: str, report_type: str, msg_template: str) -
                 select income_sum, category from income_bot.all_income
                 where user_id = %s
                 ''', (user_id, ))
-                msg_template = msg_template.format(type='доходы')
+                msg_template = msg_template.format(kind='доходы')
             elif report_type == 'expense':
                 db_cursor.execute('''
                 select expense_sum, category from income_bot.all_expense
                 where user_id = %s and created_at >= %s
                 ''', (user_id, last_week_date))
-                msg_template = msg_template.format(type='траты')
+                msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
             average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
             if average_sum != 0:
@@ -273,13 +273,13 @@ async def get_monthly_report(user_id: str, report_type: str, msg_template: str) 
                 select income_sum, category from income_bot.all_income
                 where user_id = %s
                 ''', (user_id, ))
-                msg_template = msg_template.format(type='доходы')
+                msg_template = msg_template.format(kind='доходы')
             elif report_type == 'expense':
                 db_cursor.execute('''
                 select expense_sum, category from income_bot.all_expense
                 where user_id = %s and created_at >= %s
                 ''', (user_id, last_week_date))
-                msg_template = msg_template.format(type='траты')
+                msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
             average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
             if average_sum != 0:

@@ -11,11 +11,15 @@ from bot.keyboards.keyboards_mapping import REPLY_KEYBOARDS_MSGS
 from services.db import get_today_report, get_weekly_report, get_monthly_report
 
 today_report_template = '''
-Всего {type} за сегодня: {average_sum}
+Всего {kind} за сегодня: {average_sum}
 '''
 
 weekly_report_template = '''
-Всего {type} за сегодня: {average_sum}
+Всего {kind} за неделю: {average_sum}
+'''
+
+monthly_report_template = '''
+Всего {kind} за месяц: {average_sum}
 '''
 
 
@@ -43,7 +47,7 @@ async def show_weekly_report(message: types.Message):
 
 async def show_monthly_report(message: types.Message):
     report = await get_weekly_report(user_id=str(message.from_user.id), report_type='expense',
-                                     msg_template=weekly_report_template)
+                                     msg_template=monthly_report_template)
     await message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
