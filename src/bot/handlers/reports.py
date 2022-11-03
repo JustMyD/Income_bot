@@ -11,7 +11,11 @@ from bot.keyboards.keyboards_mapping import REPLY_KEYBOARDS_MSGS
 from services.db import get_today_report, get_weekly_report
 
 today_report_template = '''
-Всего траты за сегодня: {average_sum}
+Всего {type} за сегодня: {average_sum}
+'''
+
+weekly_report_template = '''
+Всего {type} за сегодня: {average_sum}
 '''
 
 
@@ -26,17 +30,21 @@ async def report_state_start(message: types.Message):
 
 
 async def show_today_report(message: types.Message):
-    report = await get_today_report(user_id=str(message.from_user.id), report_type='expense', msg_template=today_report_template)
+    report = await get_today_report(user_id=str(message.from_user.id), report_type='expense',
+                                    msg_template=today_report_template)
     await message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
 async def show_weekly_report(message: types.Message):
-    report = await get_weekly_report(user_id=str(message.from_user.id), report_type='expense')
+    report = await get_weekly_report(user_id=str(message.from_user.id), report_type='expense',
+                                     msg_template=weekly_report_template)
     await message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
 async def show_monthly_report(message: types.Message):
-    pass
+    report = await get_weekly_report(user_id=str(message.from_user.id), report_type='expense',
+                                     msg_template=weekly_report_template)
+    await message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
 def register_handlers_report(dp: Dispatcher):

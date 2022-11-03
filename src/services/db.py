@@ -198,7 +198,7 @@ async def get_today_reports_test(user_id: int) -> dict:
     # df.to_html(buf='tmp.html', encoding='utf-8', index=False)
 
 
-async def get_today_report(user_id: str, report_type: str, msg_template: str):
+async def get_today_income_report(user_id: str, report_type: str, msg_template: str):
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
                     host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
@@ -207,51 +207,93 @@ async def get_today_report(user_id: str, report_type: str, msg_template: str):
                 select income_sum, category from income_bot.today_income
                 where user_id = %s
                 ''', (user_id, ))
+                msg_template = msg_template.format(type='доходы')
             elif report_type == 'expense':
                 db_cursor.execute('''
                 select expense_sum, category from income_bot.today_expense
                 where user_id = %s
                 ''', (user_id, ))
+                msg_template = msg_template.format(type='траты')
             result = db_cursor.fetchall()
-            average_sum = 0
-            for expense in result:
-                average_sum += int(expense['expense_sum'])
+            average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
             if average_sum != 0:
-                msg_template += '\n Траты по категориям:'
-                for expense in result:
-                    msg_template += f'\n{expense["category"]} - {expense["expense_sum"]}'
+                if report_type == 'income':
+                    msg_template += '\n Доходы по категориям:'
+                    for elem in result:
+                        msg_template += f'\n{elem["category"]} - {elem["income_sum"]}'
+                else:
+                    msg_template += '\n Траты по категориям:'
+                    for elem in result:
+                        msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
             msg_template = msg_template.format(average_sum=average_sum)
 
             return msg_template
 
 
-async def get_weekly_report(user_id: str, report_type: str) -> str:
+async def get_weekly_report(user_id: str, report_type: str, msg_template: str) -> str:
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
                     host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
-            last_week_date = dt.datetime.now().date() - dt.timedelta(days=4)
+            last_week_date = dt.datetime.now().date() - dt.timedelta(days=7)
             if report_type == 'income':
                 db_cursor.execute('''
                 select income_sum, category from income_bot.all_income
                 where user_id = %s
                 ''', (user_id, ))
+                msg_template = msg_template.format(type='доходы')
             elif report_type == 'expense':
                 db_cursor.execute('''
                 select expense_sum, category from income_bot.all_expense
                 where user_id = %s and created_at >= %s
                 ''', (user_id, last_week_date))
+                msg_template = msg_template.format(type='траты')
             result = db_cursor.fetchall()
-            out_msg = '''
-            Всего траты за неделю: {average_sum}
-            Траты по категориям:
-            '''
-            average_sum = 0
-            for expense in result:
-                average_sum += int(expense['expense_sum'])
-                out_msg += f'\n{expense["category"]} - {expense["expense_sum"]}'
-            out_msg = out_msg.format(average_sum=average_sum)
+            average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
+            if average_sum != 0:
+                if report_type == 'income':
+                    msg_template += '\n Доходы по категориям:'
+                    for elem in result:
+                        msg_template += f'\n{elem["category"]} - {elem["income_sum"]}'
+                else:
+                    msg_template += '\n Траты по категориям:'
+                    for elem in result:
+                        msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
+            msg_template = msg_template.format(average_sum=average_sum)
 
-            return out_msg
+            return msg_template
+
+
+async def get_monthly_report(user_id: str, report_type: str, msg_template: str) -> str:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
+                    host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
+        with db_connect.cursor() as db_cursor:
+            last_week_date = dt.datetime.now().date() - dt.timedelta(days=30)
+            if report_type == 'income':
+                db_cursor.execute('''
+                select income_sum, category from income_bot.all_income
+                where user_id = %s
+                ''', (user_id, ))
+                msg_template = msg_template.format(type='доходы')
+            elif report_type == 'expense':
+                db_cursor.execute('''
+                select expense_sum, category from income_bot.all_expense
+                where user_id = %s and created_at >= %s
+                ''', (user_id, last_week_date))
+                msg_template = msg_template.format(type='траты')
+            result = db_cursor.fetchall()
+            average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
+            if average_sum != 0:
+                if report_type == 'income':
+                    msg_template += '\n Доходы по категориям:'
+                    for elem in result:
+                        msg_template += f'\n{elem["category"]} - {elem["income_sum"]}'
+                else:
+                    msg_template += '\n Траты по категориям:'
+                    for elem in result:
+                        msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
+            msg_template = msg_template.format(average_sum=average_sum)
+
+            return msg_template
 
 
 if __name__ == '__main__':
