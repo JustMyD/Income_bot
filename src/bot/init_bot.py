@@ -19,7 +19,6 @@ from dotenv import load_dotenv
 from bot.keyboards.reply_keyboards import make_keyboard_reply
 from config.configuration import API_TOKEN 
 from services import user
-from services.db import get_today_report
 
 #WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
 WEBHOOK_HOST = 'https://tuttodorondo.ru'
@@ -61,13 +60,6 @@ async def show_help(message: types.Message):
 async def show_main_menu(message: types.Message):
     keyboard = make_keyboard_reply('Главное меню')
     await message.answer(text='Выберите действие', reply_markup=keyboard)
-
-
-@dp.message_handler(commands='report')
-async def send_report(message: types.Message):
-    report_data = await get_today_report(message.from_user.id)
-    await message.answer(text=report_message.format(income_sum=report_data['today_income'],
-                                                    expense_sum=report_data['today_expense']))
 
 
 @dp.message_handler(commands='feedback')
