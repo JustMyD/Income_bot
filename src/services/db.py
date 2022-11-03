@@ -198,7 +198,7 @@ async def get_today_reports_test(user_id: int) -> dict:
     # df.to_html(buf='tmp.html', encoding='utf-8', index=False)
 
 
-async def get_today_income_report(user_id: str, report_type: str, msg_template: str):
+async def get_today_report(user_id: str, report_type: str, msg_template: str):
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
                     host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
