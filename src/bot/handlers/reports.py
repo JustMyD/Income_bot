@@ -27,8 +27,9 @@ async def show_report_type_message(message: types.Message):
 
 async def show_report_period_message(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
+    report_message = 'прихода' if report_type == 'income' else 'расхода'
     inline_message = make_report_period_inline_message(report_type)
-    await bot.edit_message_text(text='Выберите период', message_id=query.message.message_id, reply_markup=inline_message)
+    await bot.edit_message_text(text=f'Выберите период для {report_message}', chat_id=query.message.chat.id, message_id=query.message.message_id, reply_markup=inline_message)
 
 
 async def show_today_report(message: types.Message):

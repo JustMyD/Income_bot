@@ -46,14 +46,14 @@ def make_report_period_inline_message(report_type: str):
     inline_message = types.InlineKeyboardMarkup(row_width=1, inline_keyboard=[
         [types.InlineKeyboardButton(text='Отчет за сегодня', callback_data=callback_data['report'].new(type=report_type,
                                                                                                        action='show',
-                                                                                                       period='today'))],
-        [types.InlineKeyboardButton(text='Отчет за неделю', callback_data=callback_data['report'].new(type=report_type,
+                                                                                                       period='today')),
+        types.InlineKeyboardButton(text='Отчет за неделю', callback_data=callback_data['report'].new(type=report_type,
                                                                                                       action='show',
                                                                                                       period='week'))],
         [types.InlineKeyboardButton(text='Отчет за месяц', callback_data=callback_data['report'].new(type=report_type,
                                                                                                      action='show',
-                                                                                                     period='month'))],
-        [types.InlineKeyboardButton(text='Свой период', callback_data=callback_data['report'].new(type=report_type,
+                                                                                                     period='month')),
+        types.InlineKeyboardButton(text='Свой период', callback_data=callback_data['report'].new(type=report_type,
                                                                                                   action='show',
                                                                                                   period='free'))]
     ])
