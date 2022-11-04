@@ -17,11 +17,9 @@ from aiogram.dispatcher.filters import Text
 from dotenv import load_dotenv
 
 from bot.keyboards.reply_keyboards import make_keyboard_reply
-from config.configuration import API_TOKEN 
+from config.configuration import API_TOKEN, WEBHOOK_HOST, BOT_EMAIL_USERNAME, BOT_EMAIL_PASSWORD
 from services import user
 
-#WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
-WEBHOOK_HOST = 'https://tuttodorondo.ru'
 
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
@@ -67,8 +65,11 @@ async def show_main_menu(message: types.Message):
 
 @dp.message_handler(commands='feedback')
 async def get_feedback(message: types.Message):
-    # ToDo отправка feedback от пользователей мне на почту
-    pass
+    to = 'commonqued@gmail.com'
+    subject = 'Отзыв пользователя от бота Приход/Расход'
+    body = message.text
+    with yagmail.SMTP(BOT_EMAIL_USERNAME, BOT_EMAIL_PASSWORD) as mail:
+       mail.send(to=to, subject=subject, contents=body) 
 
 
 async def on_startup(dispatcher):

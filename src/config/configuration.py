@@ -4,6 +4,10 @@ import os
 load_dotenv()
 
 API_TOKEN = os.getenv('API_TOKEN')
+WEBHOOK_HOST = os.getenv('WEBHOOK_HOST')
+
+BOT_EMAIL_USERNAME = os.getenv('BOT_EMAIL_USERNAME')
+BOT_EMAIL_PASSWORD = os.getenv('BOT_EMAIL_PASSWORD')
 
 DB_CONN = {
     'db_name': os.getenv('DB_NAME'),
