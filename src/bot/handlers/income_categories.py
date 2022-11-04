@@ -4,10 +4,9 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
-from ..keyboards.inline_keboards import callback_data
 
 from services.db import get_user_categories, update_user_categories
-from bot.keyboards.inline_keboards import categories_main_menu, category_edit_menu
+from bot.keyboards.inline_keyboards import categories_main_menu, category_edit_menu, callback_data
 from bot.my_filters import IsAlNum
 from bot.init_bot import bot
 

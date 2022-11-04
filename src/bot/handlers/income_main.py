@@ -3,7 +3,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text, Regexp
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
-from bot.keyboards.inline_keboards import callback_data, categories_main_menu
+from bot.keyboards.inline_keyboards import callback_data, categories_main_menu
 from bot.keyboards.reply_keyboards import make_keyboard_reply
 from services.db import add_new_income, get_user_categories
 
