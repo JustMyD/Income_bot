@@ -28,24 +28,29 @@ async def show_report_period_message(query: types.CallbackQuery, callback_data: 
 
 async def show_today_report(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
-    user_id = query.message.from_user.id
+    user_id = query.from_user.id
     report = await get_today_report(user_id=str(user_id), report_type=report_type, msg_template=today_report_template)
     await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
 async def show_weekly_report(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
-    user_id = query.message.from_user.id
+    user_id = query.from_user.id
     report = await get_weekly_report(user_id=str(user_id), report_type=report_type, msg_template=weekly_report_template)
     await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
 async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
-    user_id = query.message.from_user.id
+    user_id = query.from_user.id
     report = await get_monthly_report(user_id=str(user_id), report_type=report_type,
                                       msg_template=monthly_report_template)
     await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
+
+
+async def show_free_report(query: types.CallbakcQuery, callback_data: dict):
+    report_type = callback_data.get('type')
+    user_id = query.from_user.id
 
 
 def register_handlers_report(dp: Dispatcher):
