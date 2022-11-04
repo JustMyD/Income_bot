@@ -70,6 +70,11 @@ async def make_inline_calendar() -> tuple:
     month_days = current_month[1]
     current_day = dt.datetime.now().day
     inline_message = types.InlineKeyboardMarkup(row_width=7)
-    for day in list(range(1, month_days+1)):
-        inline_message.add(types.InlineKeyboardButton(text=day, callback_data='tmp'))
+    for week in list(range(1, month_days+1, 7)):
+        tmp_row = []
+        for day in list(range(week, week+7)):
+            if day > month_days:
+                break
+            tmp_row.append(types.InlineKeyboardButton(text=day, callback_data='tmp'))
+        inline_message.row(tmp_row)
     return inline_message, month_name
