@@ -3,15 +3,17 @@ from aiogram.dispatcher.filters import Text
 
 from bot.init_bot import bot
 
-from bot.keyboards.inline_keyboards import make_report_type_inline_message, make_report_period_inline_message, callback_data
+from bot.keyboards.inline_keyboards import make_report_type_inline_message, make_report_period_inline_message, callback_data, make_inline_calendar
 
-from services.db import get_today_report, get_weekly_report, get_monthly_report
+from services.db import get_today_report, get_weekly_report, get_monthly_report, get_free_period_report
 
 today_report_template = 'Всего {kind} за сегодня: '
 
 weekly_report_template = 'Всего {kind} за неделю: '
 
 monthly_report_template = 'Всего {kind} за месяц: '
+
+free_report_template = 'Всего {kind} за выбранный период: '
 
 
 async def show_report_type_message(message: types.Message):
@@ -48,9 +50,16 @@ async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
     await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
-async def show_free_report(query: types.CallbakcQuery, callback_data: dict):
-    report_type = callback_data.get('type')
-    user_id = query.from_user.id
+async def get_free_report_start_date(query: types.CallbackQuery):
+    inline_message, month_name = await make_inline_calendar()
+    await query.message.answer(text=f'Выберите дату начала периода\n{month_name}', reply_markup=inline_message)
+
+
+# async def show_free_report(query: types.CallbackQuery, callback_data: dict):
+#     report_type = callback_data.get('type')
+#     user_id = query.from_user.id
+#     report = await get_free_period_report(user_id=user_id, report_type=report_type, msg_template=free_report_template,
+#                                           )
 
 
 def register_handlers_report(dp: Dispatcher):
@@ -60,3 +69,6 @@ def register_handlers_report(dp: Dispatcher):
     dp.register_callback_query_handler(show_today_report, callback_data['report'].filter(action='show', period='today'))
     dp.register_callback_query_handler(show_weekly_report, callback_data['report'].filter(action='show', period='week'))
     dp.register_callback_query_handler(show_monthly_report, callback_data['report'].filter(action='show', period='month'))
+
+    dp.register_callback_query_handler(get_free_report_start_date, callback_data['report'].filter(action='show',
+                                                                                                  period='free'))

@@ -1,5 +1,9 @@
+import datetime as dt
+
 from aiogram import types
 from aiogram.utils.callback_data import CallbackData
+
+from bot.keyboards.keyboards_mapping import MONTHS_MAPPING
 
 callback_data = {
     'category': CallbackData('category', 'menu', 'action', 'name'),
@@ -58,3 +62,16 @@ def make_report_period_inline_message(report_type: str):
                                                                                                   period='free'))]
     ])
     return inline_message
+
+
+async def make_inline_calendar() -> tuple:
+    current_month = MONTHS_MAPPING[dt.datetime.now().month]
+    month_name = current_month[0]
+    month_days = current_month[1]
+    current_day = dt.datetime.now().day
+    inline_message = types.InlineKeyboardMarkup()
+    month_buttons = [[types.InlineKeyboardButton(text=day, callback_data='tmp') for day in list(range(week_start, week_start+7)) if day <= month_days] for week_start in list(range(1, month_days+1, 7))]
+    for row in month_buttons:
+        inline_message.row(row)
+
+    return inline_message, month_name

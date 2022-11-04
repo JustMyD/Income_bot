@@ -1,13 +1,13 @@
 from functools import reduce
-from config.configuration import DB_CONN
 
 import psycopg2 as ps
 import psycopg2.extras
 from sqlalchemy import create_engine
 import pandas as pd
-
 import os
 import datetime as dt
+
+from config.configuration import DB_CONN
 
 
 def get_user_categories(user_id: int, type: str) -> str:
@@ -236,7 +236,8 @@ async def get_weekly_report(user_id: str, report_type: str, msg_template: str) -
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
                     host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
-            last_week_date = dt.datetime.now().date() - dt.timedelta(days=7)
+            current_week_day = dt.datetime.now().isoweekday()
+            current_week_start_date = dt.datetime.now().date() - dt.timedelta(days=current_week_day)
             if report_type == 'income':
                 db_cursor.execute('''
                 select income_sum, category from income_bot.all_income
@@ -247,7 +248,7 @@ async def get_weekly_report(user_id: str, report_type: str, msg_template: str) -
                 db_cursor.execute('''
                 select expense_sum, category from income_bot.all_expense
                 where user_id = %s and created_at >= %s
-                ''', (user_id, last_week_date))
+                ''', (user_id, current_week_start_date))
                 msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
             average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
@@ -269,7 +270,8 @@ async def get_monthly_report(user_id: str, report_type: str, msg_template: str) 
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
                     host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
-            last_week_date = dt.datetime.now().date() - dt.timedelta(days=30)
+            current_month_day = dt.datetime.now().date().day
+            month_start_date = dt.datetime.now().date() - dt.timedelta(days=current_month_day)
             if report_type == 'income':
                 db_cursor.execute('''
                 select income_sum, category from income_bot.all_income
@@ -280,7 +282,7 @@ async def get_monthly_report(user_id: str, report_type: str, msg_template: str) 
                 db_cursor.execute('''
                 select expense_sum, category from income_bot.all_expense
                 where user_id = %s and created_at >= %s
-                ''', (user_id, last_week_date))
+                ''', (user_id, month_start_date))
                 msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
             average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
@@ -296,6 +298,14 @@ async def get_monthly_report(user_id: str, report_type: str, msg_template: str) 
                         msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
 
             return msg_template
+
+
+async def get_free_period_report(user_id: str, report_type: str, msg_template: str, period_start: str, period_end: str) -> str:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
+                    host=DB_CONN['db_host'], port=DB_CONN['db_port'],
+                    cursor_factory=ps.extras.RealDictCursor) as db_connect:
+        with db_connect.cursor() as db_cursor:
+            pass
 
 
 if __name__ == '__main__':
