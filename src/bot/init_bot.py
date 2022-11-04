@@ -31,9 +31,11 @@ dp = Dispatcher(bot, storage=storage)
 @dp.message_handler(commands='start')
 async def greet_new_user(message: types.Message):
     user_added = user.append_new_user(message.from_user)
-    if not user_added:
-        greeting_message = f'Не удалось сохранить информацию о вас, попробуйте снова'
-    else:
+    if user_added == 'Ошибка':
+        greeting_message = 'Не удалось сохранить из-за ошибки, попробуйте снова позже'
+    elif user_added == 'Пользователь уже в базе':
+        greeting_message = 'Ваш аккаунт был добавлен ранее'
+    elif user_added == 'Пользователь добавлен':
         greeting_message = f'Привет {message.from_user.full_name}'
     keyboard = make_keyboard_reply(keyboard_level='Главное меню')
     await message.answer(text=intro_message)
@@ -57,7 +59,7 @@ async def show_help(message: types.Message):
     await message.answer(text=reference_msg)
 
 
-@dp.message_handler(commands='main')
+@dp.message_handler(commands='menu')
 async def show_main_menu(message: types.Message):
     keyboard = make_keyboard_reply('Главное меню')
     await message.answer(text='Выберите действие', reply_markup=keyboard)

@@ -45,9 +45,9 @@ def append_new_user(user_data: base.TelegramObject) -> bool:
                     insert into income_bot.users (telegram_id, full_name, user_name)
                     values (%s, %s, %s)
                     ''', (user_data.id, user_data.full_name, user_data.username))
-                    result = True
+                    result = 'Пользователь добавлен'
                 except Exception as e:
-                    result = False
+                    result = 'Ошибка' 
                     print(e)          # todo Сделать логирование
             else:
                 result = 'Пользователь уже в базе'
