@@ -99,9 +99,13 @@ async def get_free_report_end_date(query: types.CallbackQuery, callback_data: di
     report = await get_free_period_report(user_id=str(user_id), report_type=report_type,
                                           msg_template=free_report_template, period_start=period_from, period_end=period_to)
     await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
+    await bot.delete_message(chat_id=query.message.chat.id, message_id=query.message.message_id)
 
 
 async def handle_empty_calendar_button(query: types.CallbackQuery):
+    """
+    Заглушка для пустых кнопок, чтобы эти запросы не тормозили обработку запросов в CallbackQuery
+    """
     pass
 
 
