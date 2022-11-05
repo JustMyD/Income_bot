@@ -56,7 +56,7 @@ async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
 
 async def show_free_report_calendar(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
-    cur_date = dt.datetime.now().date()
+    cur_date = str(dt.datetime.now().date())
     inline_message = await make_day_calendar(report_type, cur_date[:-3])
     await query.message.answer(text='Выберите дату начала периода', reply_markup=inline_message)
 
