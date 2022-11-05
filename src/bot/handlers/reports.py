@@ -2,6 +2,8 @@ import datetime as dt
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
+from aiogram.dispatcher import FSMContext
+from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from bot.init_bot import bot
 
@@ -57,7 +59,7 @@ async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
 async def show_free_report_calendar(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
     cur_date = str(dt.datetime.now().date())
-    inline_message = await make_day_calendar(report_type, cur_date[:-3])
+    inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='from')
     await query.message.answer(text='Выберите дату начала периода', reply_markup=inline_message)
 
 
@@ -65,12 +67,13 @@ async def change_calendar_view(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
     calendar_period = callback_data.get('period', 'day')
     date_part = callback_data.get('value')
+    current_phase = callback_data.get('phase')
     if calendar_period == 'year':
-        inline_message = await make_year_calendar(report_type)
+        inline_message = await make_year_calendar(report_type, current_phase=current_phase)
     elif calendar_period == 'month':
-        inline_message = await make_month_calendar(report_type, date_part)
+        inline_message = await make_month_calendar(report_type, date_part, current_phase=current_phase)
     elif calendar_period == 'day':
-        inline_message = await make_day_calendar(report_type, date_part)
+        inline_message = await make_day_calendar(report_type, date_part, current_phase=current_phase)
     await bot.edit_message_text(text='Выберите дату начала периода', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
@@ -79,25 +82,18 @@ async def get_free_report_start_date(query: types.CallbackQuery, callback_data: 
     report_type = callback_data.get('type')
     period_from = callback_data.get('value')
     cur_date = str(dt.datetime.now().date())
-    inline_message = await make_day_calendar(report_type, cur_date[:-3])
+    inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='to')
     print(period_from)
     await query.answer(text='Дата начала периода опредлена')
     await bot.edit_message_text(text='Теперь выберите дату окончания периода', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 
-# async def get_free_report_end_date(query: types.CallbackQuery, callback_data: dict):
-#     report_type = callback_data.get('type')
-#     period_to = callback_data.get('value')
-#     print(period_to)
-#     await query.answer(text='Дата окончания период определена')
-
-
-# async def show_free_report(query: types.CallbackQuery, callback_data: dict):
-#     report_type = callback_data.get('type')
-#     user_id = query.from_user.id
-#     report = await get_free_period_report(user_id=user_id, report_type=report_type, msg_template=free_report_template,
-#                                           )
+async def get_free_report_end_date(query: types.CallbackQuery, callback_data: dict):
+    report_type = callback_data.get('type')
+    period_to = callback_data.get('value')
+    print(period_to)
+    await query.answer(text='Дата окончания период определена')
 
 
 def register_handlers_report(dp: Dispatcher):
@@ -109,8 +105,7 @@ def register_handlers_report(dp: Dispatcher):
     dp.register_callback_query_handler(show_monthly_report,
                                        callback_data['report'].filter(action='show', period='month'))
 
-    dp.register_callback_query_handler(show_free_report_calendar, callback_data['report'].filter(action='show',
-                                                                                                 period='free'))
+    dp.register_callback_query_handler(show_free_report_calendar, callback_data['report'].filter(action='show', period='free'))
     dp.register_callback_query_handler(change_calendar_view, callback_data['calendar'].filter(action='change'))
-    dp.register_callback_query_handler(get_free_report_start_date, callback_data['calendar'].filter(action='choose', period='day'))
-    # dp.register_callback_query_handler(get_free_report_end_date, callback_data['calendar'].filter(action='choose', period='day'))
+    dp.register_callback_query_handler(get_free_report_start_date, callback_data['calendar'].filter(action='choose', period='day', phase='from'))
+    dp.register_callback_query_handler(get_free_report_end_date, callback_data['calendar'].filter(action='choose', period='day', phase='to'))
