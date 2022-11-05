@@ -120,9 +120,14 @@ async def make_day_calendar(report_type: str, date_part: str, current_phase: str
     for row in month_days:
         day_row = []
         for cell in row:
-            button_text = str(cell) if cell else ' '
+            if cell:
+                button_text = str(cell)
+                cell_callback_data_action = 'choose'
+            else:
+                button_text = ' '
+                cell_callback_data_action = 'no_action'
             cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=f'{date_part}-{str(cell)}',
-                                                               action='choose', phase=current_phase, phase_1_value=phase_1_value)
+                                                               action=cell_callback_data_action, phase=current_phase, phase_1_value=phase_1_value)
             day_row.append(types.InlineKeyboardButton(text=button_text, callback_data=cell_callback_data))
         inline_keyboard.row(*day_row)
 

@@ -101,6 +101,10 @@ async def get_free_report_end_date(query: types.CallbackQuery, callback_data: di
     await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
+async def handle_empty_calendar_button(query: types.CallbackQuery):
+    pass
+
+
 def register_handlers_report(dp: Dispatcher):
     dp.register_message_handler(show_report_type_message, Text('Отчеты'))
     dp.register_callback_query_handler(show_report_period_message, callback_data['report'].filter(action='choose'))
@@ -114,3 +118,5 @@ def register_handlers_report(dp: Dispatcher):
     dp.register_callback_query_handler(change_calendar_view, callback_data['calendar'].filter(action='change'))
     dp.register_callback_query_handler(get_free_report_start_date, callback_data['calendar'].filter(action='choose', period='day', phase='from'))
     dp.register_callback_query_handler(get_free_report_end_date, callback_data['calendar'].filter(action='choose', period='day', phase='to'))
+
+    dp.register_callback_query_handler(handle_empty_calendar_button, callback_data['calendar'].filter(period='day', action='no_action'))
