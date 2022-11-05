@@ -59,7 +59,7 @@ async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
 async def show_free_report_calendar(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
     cur_date = str(dt.datetime.now().date())
-    inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='from')
+    inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='from', phase_1_value='')
     await query.message.answer(text='Выберите дату начала периода', reply_markup=inline_message)
 
 
@@ -68,12 +68,13 @@ async def change_calendar_view(query: types.CallbackQuery, callback_data: dict):
     calendar_period = callback_data.get('period', 'day')
     date_part = callback_data.get('value')
     current_phase = callback_data.get('phase')
+    phase_1_value = callback_data.get('phase_1_value')
     if calendar_period == 'year':
-        inline_message = await make_year_calendar(report_type, current_phase=current_phase)
+        inline_message = await make_year_calendar(report_type, current_phase=current_phase, phase_1_value=phase_1_value)
     elif calendar_period == 'month':
-        inline_message = await make_month_calendar(report_type, date_part, current_phase=current_phase)
+        inline_message = await make_month_calendar(report_type, date_part, current_phase=current_phase, phase_1_value=phase_1_value)
     elif calendar_period == 'day':
-        inline_message = await make_day_calendar(report_type, date_part, current_phase=current_phase)
+        inline_message = await make_day_calendar(report_type, date_part, current_phase=current_phase, phase_1_value=phase_1_value)
     await bot.edit_message_text(text='Выберите дату начала периода', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
@@ -83,8 +84,7 @@ async def get_free_report_start_date(query: types.CallbackQuery, callback_data: 
     period_from = callback_data.get('value')
     period_from = dt.datetime.strptime(period_from, '%Y-%m-%d').strftime('%Y-%m-%d')
     cur_date = str(dt.datetime.now().date())
-    inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='to')
-    print(period_from)
+    inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='to', phase_1_value=period_from)
     await query.answer(text='Дата начала периода опредлена')
     await bot.edit_message_text(text='Теперь выберите дату окончания периода', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
@@ -92,10 +92,12 @@ async def get_free_report_start_date(query: types.CallbackQuery, callback_data: 
 
 async def get_free_report_end_date(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
+    period_from = callback_data.get('phase_1_value')
     period_to = callback_data.get('value')
     period_to = dt.datetime.strptime(period_to, '%Y-%m-%d').strftime('%Y-%m-%d')
-    print(period_to)
-    await query.answer(text='Дата окончания период определена')
+    report = await get_free_period_report(user_id=query.from_user.id, report_type=report_type,
+                                          msg_template=free_report_template, period_start=period_from, period_end=period_to)
+    await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
 
 
 def register_handlers_report(dp: Dispatcher):

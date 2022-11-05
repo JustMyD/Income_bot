@@ -241,8 +241,8 @@ async def get_weekly_report(user_id: str, report_type: str, msg_template: str) -
             if report_type == 'income':
                 db_cursor.execute('''
                 select income_sum, category from income_bot.all_income
-                where user_id = %s
-                ''', (user_id, ))
+                where user_id = %s and created_at >= %s
+                ''', (user_id, current_week_start_date))
                 msg_template = msg_template.format(kind='доходы')
             elif report_type == 'expense':
                 db_cursor.execute('''
@@ -275,8 +275,8 @@ async def get_monthly_report(user_id: str, report_type: str, msg_template: str) 
             if report_type == 'income':
                 db_cursor.execute('''
                 select income_sum, category from income_bot.all_income
-                where user_id = %s
-                ''', (user_id, ))
+                where user_id = %s and created_at >= %s
+                ''', (user_id, month_start_date))
                 msg_template = msg_template.format(kind='доходы')
             elif report_type == 'expense':
                 db_cursor.execute('''
@@ -305,7 +305,32 @@ async def get_free_period_report(user_id: str, report_type: str, msg_template: s
                     host=DB_CONN['db_host'], port=DB_CONN['db_port'],
                     cursor_factory=ps.extras.RealDictCursor) as db_connect:
         with db_connect.cursor() as db_cursor:
-            pass
+            if report_type == 'income':
+                db_cursor.execute('''
+                            select income_sum, category from income_bot.all_income
+                            where user_id = %s and created_at >= %s and created_at <= %s
+                            ''', (user_id, period_start, period_end))
+                msg_template = msg_template.format(kind='доходы')
+            elif report_type == 'expense':
+                db_cursor.execute('''
+                            select expense_sum, category from income_bot.all_expense
+                            where user_id = %s and created_at >= %s and created_at <= %s
+                            ''', (user_id, period_start, period_end))
+                msg_template = msg_template.format(kind='траты')
+            result = db_cursor.fetchall()
+            average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
+            msg_template += str(average_sum)
+            if average_sum != 0:
+                if report_type == 'income':
+                    msg_template += '\nДоходы по категориям:'
+                    for elem in result:
+                        msg_template += f'\n{elem["category"]} - {elem["income_sum"]}'
+                else:
+                    msg_template += '\nТраты по категориям:'
+                    for elem in result:
+                        msg_template += f'\n{elem["category"]} - {elem["expense_sum"]}'
+
+            return msg_template
 
 
 if __name__ == '__main__':
