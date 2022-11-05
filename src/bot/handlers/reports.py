@@ -1,3 +1,5 @@
+import datetime as dt
+
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
 
@@ -54,19 +56,21 @@ async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
 
 async def show_free_report_calendar(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
-    inline_message = await make_day_calendar(report_type)
+    cur_date = dt.datetime.now().date()
+    inline_message = await make_day_calendar(report_type, cur_date[:-3])
     await query.message.answer(text='Выберите дату начала периода', reply_markup=inline_message)
 
 
 async def change_calendar_view(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
-    calendar_type = callback_data.get('period', 'day')
-    if calendar_type == 'year':
+    calendar_period = callback_data.get('period', 'day')
+    date_part = callback_data.get('value')
+    if calendar_period == 'year':
         inline_message = await make_year_calendar(report_type)
-    elif calendar_type == 'month':
-        inline_message = await make_month_calendar(report_type)
-    elif calendar_type == 'day':
-        inline_message = await make_day_calendar(report_type)
+    elif calendar_period == 'month':
+        inline_message = await make_month_calendar(report_type, date_part)
+    elif calendar_period == 'day':
+        inline_message = await make_day_calendar(report_type, date_part)
     await bot.edit_message_text(text='Выберите дату начала периода', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
 

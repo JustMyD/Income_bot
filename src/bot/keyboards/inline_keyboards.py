@@ -82,30 +82,31 @@ async def make_year_calendar(report_type: str) -> types.InlineKeyboardMarkup:
     return inline_keyboard
 
 
-async def make_month_calendar(report_type: str) -> types.InlineKeyboardMarkup:
-    current_year = str(dt.datetime.now().year)
+async def make_month_calendar(report_type: str, date_part: str) -> types.InlineKeyboardMarkup:
     inline_keyboard = types.InlineKeyboardMarkup()
-    header_callback_data = callback_data['calendar'].new(type=report_type, period='year', value=current_year, action='change')
-    header = types.InlineKeyboardButton(text=current_year, callback_data=header_callback_data)
+    header_callback_data = callback_data['calendar'].new(type=report_type, period='year', value='-', action='change')
+    header = types.InlineKeyboardButton(text=date_part, callback_data=header_callback_data)
     inline_keyboard.row(header)
     for row in range(1, 13, 3):
         tmp_row = []
         for cell in range(row, row+3):
-            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=str(cell), action='change')
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=f'{date_part}-{cell}', action='change')
             tmp_row.append(types.InlineKeyboardButton(text=MONTHS_MAPPING[cell], callback_data=cell_callback_data))
         inline_keyboard.row(*tmp_row)
     return inline_keyboard
 
 
-async def make_day_calendar(report_type: str) -> types.InlineKeyboardMarkup:
-    current_year = dt.datetime.now().year
-    month_name = MONTHS_MAPPING[dt.datetime.now().month]
-    current_month = dt.datetime.now().month
-    month_days = monthcalendar(current_year, current_month)
+async def make_day_calendar(report_type: str, date_part: str) -> types.InlineKeyboardMarkup:
+    show_year = date_part.split('-')[0]
+    month_number = date_part.split('-')[1]
+    show_month = MONTHS_MAPPING[month_number]
+    month_days = monthcalendar(int(show_year), int(month_number))
     week_day_headers = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вск']
     inline_keyboard = types.InlineKeyboardMarkup()
-    header = f'{month_name} {current_year}'
-    header_callback_data = callback_data['calendar'].new(type=report_type, period='month', value=str(current_month), action='change')
+
+    header = f'{show_month} {show_year}'
+    header_callback_data = callback_data['calendar'].new(type=report_type, period='month', value=show_year, action='change')
+
     inline_keyboard.row(types.InlineKeyboardButton(text=header, callback_data=header_callback_data))
     week_day_row = [types.InlineKeyboardButton(text=name, callback_data=callback_data['calendar'].new(
         type=report_type, period='day', value=name, action='no_action'
