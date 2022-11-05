@@ -99,7 +99,7 @@ async def make_month_calendar(report_type: str, date_part: str) -> types.InlineK
 async def make_day_calendar(report_type: str, date_part: str) -> types.InlineKeyboardMarkup:
     show_year = date_part.split('-')[0]
     month_number = date_part.split('-')[1]
-    show_month = MONTHS_MAPPING[month_number]
+    show_month = MONTHS_MAPPING[int(month_number)]
     month_days = monthcalendar(int(show_year), int(month_number))
     week_day_headers = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вск']
     inline_keyboard = types.InlineKeyboardMarkup()
