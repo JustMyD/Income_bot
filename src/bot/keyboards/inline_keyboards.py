@@ -1,13 +1,17 @@
 import datetime as dt
+from calendar import monthcalendar
+from typing import Any, Generator, List
 
 from aiogram import types
+from aiogram.types import InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
 from bot.keyboards.keyboards_mapping import MONTHS_MAPPING
 
 callback_data = {
     'category': CallbackData('category', 'menu', 'action', 'name'),
-    'report': CallbackData('report', 'type', 'action', 'period')
+    'report': CallbackData('report', 'type', 'action', 'period'),
+    'calendar': CallbackData('calendar', 'type', 'period', 'value', 'action')
 }
 
 
@@ -64,17 +68,55 @@ def make_report_period_inline_message(report_type: str):
     return inline_message
 
 
-async def make_inline_calendar() -> tuple:
-    current_month = MONTHS_MAPPING[dt.datetime.now().month]
-    month_name = current_month[0]
-    month_days = current_month[1]
-    current_day = dt.datetime.now().day
-    inline_message = types.InlineKeyboardMarkup(row_width=7)
-    for week in list(range(1, month_days+1, 7)):
+async def make_year_calendar(report_type: str) -> types.InlineKeyboardMarkup:
+    current_year = dt.datetime.now().year
+    inline_keyboard = types.InlineKeyboardMarkup()
+    for row in range(current_year, current_year + 12, 3):
+        year_row = []
+        for cell in range(row, row + 3):
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='year', value=str(cell),
+                                                               action='show')
+            year_row.append(types.InlineKeyboardButton(text=str(cell), callback_data=cell_callback_data))
+        inline_keyboard.row(*year_row)
+
+    return inline_keyboard
+
+
+async def make_month_calendar(report_type: str) -> types.InlineKeyboardMarkup:
+    current_year = str(dt.datetime.now().year)
+    inline_keyboard = types.InlineKeyboardMarkup()
+    header_callback_data = callback_data['calendar'].new(type=report_type, period='month', value=current_year, action='change')
+    header = types.InlineKeyboardButton(text=current_year, callback_data=header_callback_data)
+    inline_keyboard.row(header)
+    for row in range(1, 13, 3):
         tmp_row = []
-        for day in list(range(week, week+7)):
-            if day > month_days:
-                break
-            tmp_row.append(types.InlineKeyboardButton(text=day, callback_data='tmp'))
-        inline_message.row(tmp_row)
-    return inline_message, month_name
+        for cell in range(row, row+3):
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='month', value=str(cell), action='show')
+            tmp_row.append(types.InlineKeyboardButton(text=MONTHS_MAPPING[cell], callback_data=cell_callback_data))
+        inline_keyboard.row(*tmp_row)
+    return inline_keyboard
+
+
+async def make_day_calendar(report_type: str) -> types.InlineKeyboardMarkup:
+    current_year = dt.datetime.now().year
+    month_name = MONTHS_MAPPING[dt.datetime.now().month]
+    current_month = dt.datetime.now().month
+    month_days = monthcalendar(current_year, current_month)
+    week_day_headers = ['Пн', 'Вт', 'Ср', 'Чт', 'Пт', 'Сб', 'Вск']
+    inline_keyboard = types.InlineKeyboardMarkup()
+    header = f'{month_name} {current_year}'
+    header_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=str(current_month), action='change')
+    inline_keyboard.row(types.InlineKeyboardButton(text=header, callback_data=header_callback_data))
+    week_day_row = [types.InlineKeyboardButton(text=name, callback_data=callback_data['calendar'].new(
+        type=report_type, period='day', value=name, action='no_action'
+    )) for name in week_day_headers]
+    inline_keyboard.row(*week_day_row)
+    for row in month_days:
+        day_row = []
+        for cell in row:
+            button_text = str(cell) if cell else ' '
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=str(cell), action='choose')
+            day_row.append(types.InlineKeyboardButton(text=button_text, callback_data=cell_callback_data))
+        inline_keyboard.row(*day_row)
+
+    return inline_keyboard
