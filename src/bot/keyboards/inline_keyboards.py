@@ -74,8 +74,8 @@ async def make_year_calendar(report_type: str) -> types.InlineKeyboardMarkup:
     for row in range(current_year, current_year + 12, 3):
         year_row = []
         for cell in range(row, row + 3):
-            cell_callback_data = callback_data['calendar'].new(type=report_type, period='year', value=str(cell),
-                                                               action='show')
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='month', value=str(cell),
+                                                               action='change')
             year_row.append(types.InlineKeyboardButton(text=str(cell), callback_data=cell_callback_data))
         inline_keyboard.row(*year_row)
 
@@ -91,7 +91,7 @@ async def make_month_calendar(report_type: str) -> types.InlineKeyboardMarkup:
     for row in range(1, 13, 3):
         tmp_row = []
         for cell in range(row, row+3):
-            cell_callback_data = callback_data['calendar'].new(type=report_type, period='month', value=str(cell), action='show')
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=str(cell), action='change')
             tmp_row.append(types.InlineKeyboardButton(text=MONTHS_MAPPING[cell], callback_data=cell_callback_data))
         inline_keyboard.row(*tmp_row)
     return inline_keyboard
