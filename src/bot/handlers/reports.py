@@ -81,6 +81,7 @@ async def change_calendar_view(query: types.CallbackQuery, callback_data: dict):
 async def get_free_report_start_date(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
     period_from = callback_data.get('value')
+    period_from = dt.datetime.strptime(period_from, '%Y-%m-%d').strftime('%Y-%m-%d')
     cur_date = str(dt.datetime.now().date())
     inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='to')
     print(period_from)
@@ -92,6 +93,7 @@ async def get_free_report_start_date(query: types.CallbackQuery, callback_data: 
 async def get_free_report_end_date(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
     period_to = callback_data.get('value')
+    period_to = dt.datetime.strptime(period_to, '%Y-%m-%d').strftime('%Y-%m-%d')
     print(period_to)
     await query.answer(text='Дата окончания период определена')
 
