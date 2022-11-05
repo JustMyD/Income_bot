@@ -116,7 +116,7 @@ async def make_day_calendar(report_type: str, date_part: str) -> types.InlineKey
         day_row = []
         for cell in row:
             button_text = str(cell) if cell else ' '
-            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=str(cell), action='choose')
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=f'{date_part}-{str(cell)}', action='choose')
             day_row.append(types.InlineKeyboardButton(text=button_text, callback_data=cell_callback_data))
         inline_keyboard.row(*day_row)
 

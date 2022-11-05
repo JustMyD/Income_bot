@@ -77,16 +77,20 @@ async def change_calendar_view(query: types.CallbackQuery, callback_data: dict):
 
 async def get_free_report_start_date(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
-    inline_message = await make_day_calendar(report_type)
+    period_from = callback_data.get('value')
+    cur_date = str(dt.datetime.now().date())
+    inline_message = await make_day_calendar(report_type, cur_date[:-3])
+    print(period_from)
+    await query.answer(text='Дата начала периода опредлена')
     await bot.edit_message_text(text='Теперь выберите дату окончания периода', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 
-async def get_free_report_end_date(query: types.CallbackQuery, callback_data: dict):
-    report_type = callback_data.get('type')
-    inline_message = await make_day_calendar(report_type)
-    await bot.edit_message_text(text='Теперь выберите дату окончания периода', chat_id=query.message.chat.id,
-                                message_id=query.message.message_id, reply_markup=inline_message)
+# async def get_free_report_end_date(query: types.CallbackQuery, callback_data: dict):
+#     report_type = callback_data.get('type')
+#     period_to = callback_data.get('value')
+#     print(period_to)
+#     await query.answer(text='Дата окончания период определена')
 
 
 # async def show_free_report(query: types.CallbackQuery, callback_data: dict):
@@ -109,4 +113,4 @@ def register_handlers_report(dp: Dispatcher):
                                                                                                  period='free'))
     dp.register_callback_query_handler(change_calendar_view, callback_data['calendar'].filter(action='change'))
     dp.register_callback_query_handler(get_free_report_start_date, callback_data['calendar'].filter(action='choose', period='day'))
-    dp.register_callback_query_handler(get_free_report_end_date, callback_data['calendar'].filter(action='choose', period='day'))
+    # dp.register_callback_query_handler(get_free_report_end_date, callback_data['calendar'].filter(action='choose', period='day'))
