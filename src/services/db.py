@@ -66,7 +66,7 @@ async def update_user_categories(user_id: int, categories: str, type: str) -> bo
     return categories_updated
 
 
-async def add_new_income(user_id: int, income_sum: int, category: str):
+async def add_new_income(user_id: str, income_sum: int, category: str):
     """
     Добавление в БД записи о получении средств за сегодня
     :param user_id: ID в телеграмм
@@ -116,7 +116,7 @@ async def add_new_income(user_id: int, income_sum: int, category: str):
     return result
 
 
-async def add_new_expense(user_id: int, expense_sum: int, category: str):
+async def add_new_expense(user_id: str, expense_sum: int, category: str):
     """
     Добавление в БД записи о расходах за сегодня
     :param user_id: ID в телеграмм
