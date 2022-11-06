@@ -2,6 +2,7 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters import Text
 from aiogram.dispatcher.filters.state import State, StatesGroup
+from aiogram.utils.callback_data import CallbackData
 
 from bot.init_bot import bot
 from bot.keyboards.inline_keyboards import callback_data, categories_main_menu
@@ -16,6 +17,10 @@ class FSMIncome(StatesGroup):
 
 async def income_state_start(message: types.Message):
     await FSMIncome.income_sum.set()
+    cancel_callback_data = CallbackData('cancel_income', 'menu', 'action').new('main_menu', 'cancel')
+    inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text='Отменить ввод', callback_data=cancel_callback_data)]
+    ])
     await message.answer(text='Отправьте сообщение с суммой прихода:', reply_markup=types.ReplyKeyboardRemove())
 
 
@@ -45,8 +50,15 @@ async def income_state_category(query: types.CallbackQuery, callback_data: dict,
     await state.finish()
 
 
+async def income_state_cancel(query: types.CallbackQuery, state: FSMContext):
+    await state.finish()
+    keyboard = make_keyboard_reply(keyboard_level='Главное меню')
+    await query.message.answer(text='Ввод отменен', reply_markup=keyboard)
+
+
 def register_handlers_income(dp: Dispatcher):
     dp.register_message_handler(income_state_start, Text('Получил'), state=None)
     dp.register_message_handler(income_state_sum, state=FSMIncome.income_sum)
     dp.register_callback_query_handler(income_state_category,
                                        callback_data['category'].filter(menu='main_menu'), state=FSMIncome.income_category)
+    dp.register_callback_query_handler(income_state_cancel, callback_data['category'].filter(menu='main_menu', action='cancel'))
