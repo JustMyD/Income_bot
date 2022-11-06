@@ -51,7 +51,7 @@ async def income_state_sum(message: types.Message, state: FSMContext):
 
 async def income_state_category(query: types.CallbackQuery, callback_data: dict, state=FSMContext):
     await query.answer(cache_time=20)
-    income_sum = int(callback_data.get('count'))
+    income_sum = int(callback_data.get('value'))
     category_name = callback_data.get('name')
     result = await add_new_income(query.from_user.id, income_sum, category_name)
     keyboard = make_keyboard_reply(keyboard_level='Главное меню')
