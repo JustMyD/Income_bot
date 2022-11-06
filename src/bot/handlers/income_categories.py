@@ -65,13 +65,12 @@ async def callback_add_income_category_end(message: types.Message, state: FSMCon
     category_name = category_name.replace(',', ';')
     chat_id = message.chat.id
     last_user_msg = message.message_id
+    user_categories = get_user_categories(message.from_user.id, type='income')
+    user_categories = user_categories.split(', ') if user_categories else []
     if len(category_name) > 25:
-        await message.answer(text='Слишком длинное название категории')
-        await state.reset_state()
-    else:
+        await message.answer(text='Слишком длинное название категории, введите короче')
+    elif user_categories and len(user_categories) < 10:
         async with state.proxy() as data:
-            user_categories = get_user_categories(message.from_user.id, type='income')
-            user_categories = user_categories.split(', ') if user_categories else []
             if category_name not in user_categories:
                 user_categories.append(category_name)
                 inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
@@ -85,7 +84,10 @@ async def callback_add_income_category_end(message: types.Message, state: FSMCon
                 await bot.delete_message(chat_id=chat_id, message_id=bot_msg.message_id)
             await bot.delete_message(chat_id=chat_id, message_id=last_user_msg)
             await bot.delete_message(chat_id=chat_id, message_id=data['first_user_msg_id'])
-    await state.finish()
+            await state.finish()
+    elif len(user_categories) == 10:
+        await message.answer(text='Нельзя добавить больше 10 категорий')
+        await state.finish()
 
 
 async def get_back_to_income_categories(query: types.CallbackQuery):
