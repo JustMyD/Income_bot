@@ -21,7 +21,7 @@ async def income_state_start(message: types.Message):
     inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text='Отменить ввод', callback_data=cancel_callback_data)]
     ])
-    await message.answer(text='Отправьте сообщение с суммой прихода:', reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(text='Отправьте сообщение с суммой прихода:', reply_markup=inline_message)
 
 
 async def income_state_sum(message: types.Message, state: FSMContext):
