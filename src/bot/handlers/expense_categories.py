@@ -24,7 +24,7 @@ async def callback_show_categories_expense(message: types.Message):
     user_categories = user_categories.split(', ') if user_categories else []
     if not user_categories:
         print("Doesn't have any category")
-    inline_message = categories_main_menu(user_categories, category_menu='expense_menu')
+    inline_message = categories_main_menu(user_categories, category_menu='expense_menu', count='0')
     await message.answer(text='Выберите категорию:', reply_markup=inline_message)
 
 
@@ -61,7 +61,7 @@ async def callback_add_expense_category_start(query: types.CallbackQuery, state:
     keyboard = types.ReplyKeyboardRemove()
     message = await bot.send_message(chat_id=chat_id, text='Введите название категории', reply_markup=keyboard)
     async with state.proxy() as data:
-        data['user_message_id'] = message.message_id
+        data['bot_message_id'] = message.message_id
         data['inline_message_id'] = query.message.message_id
 
 
@@ -69,28 +69,29 @@ async def callback_add_expense_category_end(message: types.Message, state: FSMCo
     category_name = message.text
     category_name = category_name.replace(',', ';')
     chat_id = message.chat.id
+    user_categories = get_user_categories(message.from_user.id, type='expense')
+    user_categories = user_categories.split(', ') if user_categories else []
     if len(category_name) > 25:
-        await message.answer(text='Слишком длинное название категории')
-        await state.finish()
-    else:
+        await message.answer(text='Слишком длинное название категории, введите короче')
+    elif user_categories:
         async with state.proxy() as data:
-            user_categories = get_user_categories(message.from_user.id, type='expense')
-            user_categories = user_categories.split(', ') if user_categories else []
-            if category_name not in user_categories:
-                user_categories.append(category_name)
-                inline_message = categories_main_menu(user_categories, category_menu='expense_menu')
-                user_categories = ', '.join(user_categories)
-                await update_user_categories(user_id=message.from_user.id, categories=user_categories, type='expense')
-
-                await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
-                                            message_id=data['inline_message_id'], reply_markup=inline_message)
-            else:
-                msg = await message.answer(text='Такая категория уже существует')
-                time.sleep(2)
-                await bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
+            if len(user_categories) < 10:
+                if category_name not in user_categories:
+                    user_categories.append(category_name)
+                    inline_message = categories_main_menu(user_categories, category_menu='expense_menu', count='0')
+                    user_categories = ', '.join(user_categories)
+                    await update_user_categories(user_id=message.from_user.id, categories=user_categories, type='expense')
+                    await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
+                                                message_id=data['inline_message_id'], reply_markup=inline_message)
+                else:
+                    msg = await message.answer(text='Такая категория уже существует')
+                    time.sleep(2)
+                    await bot.delete_message(chat_id=chat_id, message_id=msg.message_id)
+            elif len(user_categories) == 10:
+                await message.answer(text='Нельзя добавить больше 10 категорий')
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
-            await bot.delete_message(chat_id=message.chat.id, message_id=data['user_message_id'])
-    await state.finish()
+            await bot.delete_message(chat_id=message.chat.id, message_id=data['bot_message_id'])
+            await state.finish()
 
 
 async def callback_rename_expense_category_start(query: types.CallbackQuery, state=FSMContext):

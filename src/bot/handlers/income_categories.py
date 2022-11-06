@@ -56,7 +56,7 @@ async def callback_add_income_category_start(query: types.CallbackQuery, state: 
     keyboard = types.ReplyKeyboardRemove()
     message = await bot.send_message(chat_id=chat_id, text='Введите название категории', reply_markup=keyboard)
     async with state.proxy() as data:
-        data['first_user_msg_id'] = message.message_id
+        data['bot_message_id'] = message.message_id
         data['inline_message_id'] = query.message.message_id
 
 
@@ -86,7 +86,7 @@ async def callback_add_income_category_end(message: types.Message, state: FSMCon
             elif len(user_categories) == 10:
                 await message.answer(text='Нельзя добавить больше 10 категорий')
             await bot.delete_message(chat_id=chat_id, message_id=last_user_msg)
-            await bot.delete_message(chat_id=chat_id, message_id=data['first_user_msg_id'])
+            await bot.delete_message(chat_id=chat_id, message_id=data['bot_message_id'])
             await state.finish()
 
 
