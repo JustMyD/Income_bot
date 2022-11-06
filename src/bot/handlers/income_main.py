@@ -22,7 +22,7 @@ async def income_state_start(message: types.Message):
 
 async def income_state_sum(message: types.Message, state: FSMContext):
     income_sum = message.text
-    if income_sum == 'Отмена':
+    if income_sum.strip().lower() == 'отмена':
         await state.finish()
         keyboard = make_keyboard_reply(keyboard_level='Главное меню')
         await message.answer(text='Отмена ввода', reply_markup=keyboard)
