@@ -129,7 +129,7 @@ async def get_back_to_expense_categories(query: types.CallbackQuery):
     message_id = query.message.message_id
     chat_id = query.message.chat.id
     if user_categories:
-        inline_message = categories_main_menu(user_categories, category_menu='expense_menu')
+        inline_message = categories_main_menu(user_categories, category_menu='expense_menu', count='0')
     else:
         print("Doesn't have any category")
     await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
