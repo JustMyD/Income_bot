@@ -2,8 +2,6 @@ import datetime as dt
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
-from aiogram.dispatcher import FSMContext
-from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from bot.init_bot import bot
 
@@ -63,7 +61,6 @@ async def show_free_report_calendar(query: types.CallbackQuery, callback_data: d
     inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='from', phase_1_value='')
     await bot.edit_message_text(text='Выберите дату начала периода', chat_id=query.message.chat.id, 
                                 message_id=query.message.message_id, reply_markup=inline_message)
-    #await query.message.answer(text='Выберите дату начала периода', reply_markup=inline_message)
 
 
 async def change_calendar_view(query: types.CallbackQuery, callback_data: dict):

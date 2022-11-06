@@ -7,7 +7,6 @@ from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from services.db import get_user_categories, update_user_categories
 from bot.keyboards.inline_keyboards import categories_main_menu, category_edit_menu, callback_data
-from bot.my_filters import IsAlNum
 from bot.init_bot import bot
 
 
@@ -20,7 +19,7 @@ async def callback_show_categories_income(message: types.Message):
     user_categories = user_categories.split(', ') if user_categories else []
     if not user_categories:
         print("Doesn't have any category")
-    inline_message = categories_main_menu(user_categories, category_menu='income_menu')
+    inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
     await message.answer(text='Выберите категорию:', reply_markup=inline_message)
 
 
@@ -44,7 +43,7 @@ async def callback_remove_income_category(query: types.CallbackQuery):
         user_categories.remove(category_name)
         user_categories_str = ', '.join(user_categories)
         await update_user_categories(user_id=user_id, categories=user_categories_str, type='income')
-        inline_message = categories_main_menu(user_categories, category_menu='income_menu')
+        inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
         await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
                                     message_id=message_id, reply_markup=inline_message)
     else:
@@ -75,7 +74,7 @@ async def callback_add_income_category_end(message: types.Message, state: FSMCon
             user_categories = user_categories.split(', ') if user_categories else []
             if category_name not in user_categories:
                 user_categories.append(category_name)
-                inline_message = categories_main_menu(user_categories, category_menu='income_menu')
+                inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
                 user_categories = ', '.join(user_categories)
                 await update_user_categories(user_id=message.from_user.id, categories=user_categories, type='income')
                 await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
@@ -95,7 +94,7 @@ async def get_back_to_income_categories(query: types.CallbackQuery):
     message_id = query.message.message_id
     chat_id = query.message.chat.id
     if user_categories:
-        inline_message = categories_main_menu(user_categories, category_menu='income_menu')
+        inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
     else:
         print("Doesn't have any category")
     await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',

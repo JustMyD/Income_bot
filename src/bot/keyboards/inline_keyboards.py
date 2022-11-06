@@ -1,30 +1,30 @@
 import datetime as dt
 from calendar import monthcalendar
-from typing import Any, Generator, List
 
 from aiogram import types
-from aiogram.types import InlineKeyboardButton
 from aiogram.utils.callback_data import CallbackData
 
 from bot.keyboards.keyboards_mapping import MONTHS_MAPPING
 
 callback_data = {
-    'category': CallbackData('category', 'menu', 'action', 'name'),
+    'category': CallbackData('category', 'menu', 'action', 'value', 'name'),
     'report': CallbackData('report', 'type', 'action', 'period'),
     'calendar': CallbackData('calendar', 'type', 'period', 'value', 'action', 'phase', 'phase_1_value')
 }
 
 
-def categories_main_menu(categories: list, category_menu: str) -> types.InlineKeyboardMarkup:
+def categories_main_menu(categories: list, category_menu: str, count: str) -> types.InlineKeyboardMarkup:
     inline_message = types.InlineKeyboardMarkup(row_width=1)
     for category in categories:
         inline_message.insert(types.InlineKeyboardButton(text=f'{category}',
                                                          callback_data=callback_data['category'].new(category_menu,
-                                                                                                     'show', category)))
+                                                                                                     'show', count,
+                                                                                                     category)))
     if category_menu != 'main_menu':
         inline_message.insert(types.InlineKeyboardButton(text='Добавить категорию',
                                                          callback_data=callback_data['category'].new(category_menu,
-                                                                                                     'add', 'new')))
+                                                                                                     'add', count,
+                                                                                                     'new')))
 
     return inline_message
 
@@ -32,10 +32,10 @@ def categories_main_menu(categories: list, category_menu: str) -> types.InlineKe
 def category_edit_menu(category_name: str, category_menu: str) -> types.InlineKeyboardMarkup:
     inline_message = types.InlineKeyboardMarkup(row_width=1, inline_keyboard=[
         [types.InlineKeyboardButton(text='Удалить категорию',
-                                    callback_data=callback_data['category'].new(category_menu, 'remove',
+                                    callback_data=callback_data['category'].new(category_menu, 'remove', '0',
                                                                                 category_name))],
         [types.InlineKeyboardButton(text='Назад',
-                                    callback_data=callback_data['category'].new(category_menu, 'back', 'main_menu'))]
+                                    callback_data=callback_data['category'].new(category_menu, 'back', '0', 'main_menu'))]
     ])
     return inline_message
 
