@@ -13,21 +13,20 @@ from services.db import add_new_income, get_user_categories
 class FSMIncome(StatesGroup):
     income_sum = State()
     income_category = State()
-    income_cancel = State()
 
 
 async def income_state_start(message: types.Message):
     await FSMIncome.income_sum.set()
-    cancel_callback_data = CallbackData('cancel_income', 'menu', 'action').new('main_menu', 'cancel')
-    inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text='Отменить ввод', callback_data=cancel_callback_data)]
-    ])
-    await message.answer(text='Отправьте сообщение с суммой прихода:', reply_markup=inline_message)
+    await message.answer(text='Отправьте сообщение с суммой прихода:', reply_markup=types.ReplyKeyboardRemove())
 
 
 async def income_state_sum(message: types.Message, state: FSMContext):
     income_sum = message.text
-    if income_sum.isnumeric():
+    if income_sum == 'Отмена':
+        await state.finish()
+        keyboard = make_keyboard_reply(keyboard_level='Главное меню')
+        await message.answer(text='Отмена ввода', reply_markup=keyboard)
+    elif income_sum.isnumeric():
         await FSMIncome.income_category.set()
         user_categories = get_user_categories(message.from_user.id, type='income').split(', ')
         if user_categories:
@@ -51,20 +50,9 @@ async def income_state_category(query: types.CallbackQuery, callback_data: dict,
     await state.finish()
 
 
-async def income_state_cancel(query: types.CallbackQuery, state: FSMContext):
-    cur_state = await state.get_state()
-    print(cur_state)
-    # keyboard = make_keyboard_reply(keyboard_level='Главное меню')
-    await query.message.answer(text='Ввод отменен')
-    await state.finish()
-
-
 def register_handlers_income(dp: Dispatcher):
     dp.register_message_handler(income_state_start, Text('Получил'), state=None)
     dp.register_message_handler(income_state_sum, state=FSMIncome.income_sum)
     dp.register_callback_query_handler(income_state_category,
                                        callback_data['category'].filter(menu='main_menu'),
                                        state=FSMIncome.income_category)
-    dp.register_callback_query_handler(income_state_cancel,
-                                       callback_data['category'].filter(menu='main_menu', action='cancel'),
-                                       state=FSMIncome.income_cancel)
