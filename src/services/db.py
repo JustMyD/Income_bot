@@ -85,7 +85,7 @@ async def add_new_income(user_id: str, income_sum: int, category: str):
             try:
                 db_cursor.execute('''
                 select * from income_bot.today_income
-                where user_id = %s and category = %s
+                where user_id = %s and category = %s and created_at > current_date
                 ''', (user_id, category))
                 today_user_incomes = db_cursor.fetchone()
             except Exception as e:
@@ -95,9 +95,9 @@ async def add_new_income(user_id: str, income_sum: int, category: str):
             if today_user_incomes:
                 try:
                     db_cursor.execute('''
-                    update income_bot.today_income
+                    update income_bot.all_income
                     set income_sum = income_sum + %s, updated_at = %s
-                    where user_id = %s and category = %s
+                    where user_id = %s and category = %s and created_at > current_date
                     ''', (income_sum, current_date_time, user_id, category))
                     result = 'Добавлен'
                 except Exception as e:
@@ -106,7 +106,7 @@ async def add_new_income(user_id: str, income_sum: int, category: str):
             else:
                 try:
                     db_cursor.execute("""
-                    insert into income_bot.today_income (user_id, income_sum, category, created_at, updated_at)
+                    insert into income_bot.all_income (user_id, income_sum, category, created_at, updated_at)
                     values (%s, %s, %s, %s, %s)
                     """, (user_id, income_sum, category, current_date_time, current_date_time))
                     result = 'Добавлен'
@@ -134,7 +134,8 @@ async def add_new_expense(user_id: str, expense_sum: int, category: str):
 
             try:
                 db_cursor.execute('''
-                select * from income_bot.today_expense where user_id = %s and category = %s
+                select * from income_bot.all_expense 
+                where user_id = %s and category = %s and created_at > current_date
                 ''', (user_id, category))
                 today_user_expense = db_cursor.fetchone()
             except Exception as e:
@@ -144,9 +145,9 @@ async def add_new_expense(user_id: str, expense_sum: int, category: str):
             if today_user_expense:
                 try:
                     db_cursor.execute('''
-                    update income_bot.today_expense
+                    update income_bot.all_expense
                     set expense_sum = expense_sum + %s, updated_at = %s
-                    where user_id = %s and category = %s
+                    where user_id = %s and category = %s and created_at > current_date
                     ''', (expense_sum, current_date_time, user_id, category))
                     result = 'Добавлен'
                 except Exception as e:
@@ -155,7 +156,7 @@ async def add_new_expense(user_id: str, expense_sum: int, category: str):
             else:
                 try:
                     db_cursor.execute("""
-                    insert into income_bot.today_expense (user_id, expense_sum, category, created_at, updated_at)
+                    insert into income_bot.all_expense (user_id, expense_sum, category, created_at, updated_at)
                     values (%s, %s, %s, %s, %s)
                     """, (user_id, expense_sum, category, current_date_time, current_date_time))
                     result = 'Добавлен'
@@ -206,14 +207,14 @@ async def get_today_report(user_id: str, report_type: str, msg_template: str):
         with db_connect.cursor() as db_cursor:
             if report_type == 'income':
                 db_cursor.execute('''
-                select income_sum, category from income_bot.today_income
-                where user_id = %s
+                select income_sum, category from income_bot.all_income
+                where user_id = %s and created_at > current_date
                 ''', (user_id, ))
                 msg_template = msg_template.format(kind='доходы')
             elif report_type == 'expense':
                 db_cursor.execute('''
-                select expense_sum, category from income_bot.today_expense
-                where user_id = %s
+                select expense_sum, category from income_bot.all_expense
+                where user_id = %s and created_at > current_date
                 ''', (user_id, ))
                 msg_template = msg_template.format(kind='траты')
             result = db_cursor.fetchall()
