@@ -36,7 +36,11 @@ async def income_state_sum(message: types.Message, state: FSMContext):
             await message.answer(text='Не удалось получить ваши категории')
             await state.finish()
     else:
-        await message.answer(text='Ввести нужно только число, без знаков. Попробуйте еще раз')
+        bot_message = await message.answer(text='Ввести нужно только число, без знаков. Попробуйте еще раз')
+        async with state.proxy() as data:
+            if data['remove_msg']:
+                await bot.delete_message(chat_id=message.chat.id, message_id=data['remove_msg'])
+            data['remove_msg'] = bot_message.message_id
         await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
