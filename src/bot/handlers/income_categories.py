@@ -69,25 +69,25 @@ async def callback_add_income_category_end(message: types.Message, state: FSMCon
     user_categories = user_categories.split(', ') if user_categories else []
     if len(category_name) > 25:
         await message.answer(text='Слишком длинное название категории, введите короче')
-    elif user_categories and len(user_categories) < 10:
+    elif user_categories:
         async with state.proxy() as data:
-            if category_name not in user_categories:
-                user_categories.append(category_name)
-                inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
-                user_categories = ', '.join(user_categories)
-                await update_user_categories(user_id=message.from_user.id, categories=user_categories, type='income')
-                await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
-                                            message_id=data['inline_message_id'], reply_markup=inline_message)
-            else:
-                bot_msg = await message.answer(text='Такая категория уже существует')
-                time.sleep(2)
-                await bot.delete_message(chat_id=chat_id, message_id=bot_msg.message_id)
+            if len(user_categories) < 10:
+                if category_name not in user_categories:
+                    user_categories.append(category_name)
+                    inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
+                    user_categories = ', '.join(user_categories)
+                    await update_user_categories(user_id=message.from_user.id, categories=user_categories, type='income')
+                    await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
+                                                message_id=data['inline_message_id'], reply_markup=inline_message)
+                else:
+                    bot_msg = await message.answer(text='Такая категория уже существует')
+                    time.sleep(2)
+                    await bot.delete_message(chat_id=chat_id, message_id=bot_msg.message_id)
+            elif len(user_categories) == 10:
+                await message.answer(text='Нельзя добавить больше 10 категорий')
             await bot.delete_message(chat_id=chat_id, message_id=last_user_msg)
             await bot.delete_message(chat_id=chat_id, message_id=data['first_user_msg_id'])
             await state.finish()
-    elif len(user_categories) == 10:
-        await message.answer(text='Нельзя добавить больше 10 категорий')
-        await state.finish()
 
 
 async def get_back_to_income_categories(query: types.CallbackQuery):
