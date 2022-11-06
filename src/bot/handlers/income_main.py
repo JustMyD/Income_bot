@@ -16,7 +16,7 @@ class FSMIncome(StatesGroup):
 
 async def income_state_start(message: types.Message):
     await FSMIncome.income_sum.set()
-    await message.answer(text='Введите сумму прихода:', reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(text='Отправьте сообщение с суммой прихода:', reply_markup=types.ReplyKeyboardRemove())
 
 
 async def income_state_sum(message: types.Message, state: FSMContext):
@@ -31,7 +31,7 @@ async def income_state_sum(message: types.Message, state: FSMContext):
             await message.answer(text='Не удалось получить ваши категории')
             await state.finish()
     else:
-        await types.CallbackQuery.answer(text='Ввести нужно только число, без знаков. Попробуйте еще раз', show_alert=True)
+        await message.answer(text='Ввести нужно только число, без знаков. Попробуйте еще раз')
         await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
@@ -47,6 +47,6 @@ async def income_state_category(query: types.CallbackQuery, callback_data: dict,
 
 def register_handlers_income(dp: Dispatcher):
     dp.register_message_handler(income_state_start, Text('Получил'), state=None)
-    dp.register_message_handler(income_state_sum, Text(), state=FSMIncome.income_sum)
+    dp.register_message_handler(income_state_sum, state=FSMIncome.income_sum)
     dp.register_callback_query_handler(income_state_category,
                                        callback_data['category'].filter(menu='main_menu'), state=FSMIncome.income_category)
