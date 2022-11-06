@@ -24,5 +24,5 @@ if __name__ == '__main__':
     # print(tmp2)
     t = [[x*i for i in range(3)] for x in range(5)]
     t2 = [[MONTHS_MAPPING[i][0]]+[MONTHS_MAPPING[i+1][0]]+[MONTHS_MAPPING[i+2][0]] for i in range(1, 13, 3)]
-    a = '-'
-    print(a == '-')
+    a = '002'
+    print(int(a))

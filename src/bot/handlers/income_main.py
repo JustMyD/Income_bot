@@ -28,6 +28,10 @@ async def income_state_sum(message: types.Message, state: FSMContext):
         await message.answer(text='Отмена ввода', reply_markup=keyboard)
     elif income_sum.isnumeric():
         await FSMIncome.income_category.set()
+        async with state.proxy() as data:
+            remove_msg_id = data.get('remove_msg')
+            if remove_msg_id:
+                await bot.delete_message(chat_id=message.chat.id, message_id=remove_msg_id)
         user_categories = get_user_categories(message.from_user.id, type='income').split(', ')
         if user_categories:
             inline_message = categories_main_menu(user_categories, category_menu='main_menu', count=income_sum)
