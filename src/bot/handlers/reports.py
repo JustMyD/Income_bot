@@ -24,6 +24,7 @@ free_report_template = 'Всего {kind} за выбранный период: 
 async def show_report_type_message(message: types.Message):
     inline_message = make_report_type_inline_message()
     await message.answer(text='Выберите тип отчета', reply_markup=inline_message)
+    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
 async def show_report_period_message(query: types.CallbackQuery, callback_data: dict):
@@ -60,7 +61,9 @@ async def show_free_report_calendar(query: types.CallbackQuery, callback_data: d
     report_type = callback_data.get('type')
     cur_date = str(dt.datetime.now().date())
     inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='from', phase_1_value='')
-    await query.message.answer(text='Выберите дату начала периода', reply_markup=inline_message)
+    await bot.edit_message_text(text='Выберите дату начала периода', chat_id=query.message.chat.id, 
+                                message_id=query.message.message_id, reply_markup=inline_message)
+    #await query.message.answer(text='Выберите дату начала периода', reply_markup=inline_message)
 
 
 async def change_calendar_view(query: types.CallbackQuery, callback_data: dict):

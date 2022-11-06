@@ -43,8 +43,8 @@ def category_edit_menu(category_name: str, category_menu: str) -> types.InlineKe
 def make_report_type_inline_message():
     inline_message = types.InlineKeyboardMarkup(row_width=1, inline_keyboard=[
         [types.InlineKeyboardButton(text='Доход',
-                                    callback_data=callback_data['report'].new('income', 'choose', 'empty'))],
-        [types.InlineKeyboardButton(text='Расход',
+                                    callback_data=callback_data['report'].new('income', 'choose', 'empty')),
+        types.InlineKeyboardButton(text='Расход',
                                     callback_data=callback_data['report'].new('expense', 'choose', 'empty'))]
     ])
     return inline_message
