@@ -4,9 +4,9 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
 
 from bot.init_bot import bot
-
+from bot.keyboards.inline_keyboards import menu_callback_data
 from bot.keyboards.inline_keyboards import make_report_type_inline_message, make_report_period_inline_message, \
-    callback_data, make_year_calendar, make_month_calendar, make_day_calendar
+    reports_callback_data, make_year_calendar, make_month_calendar, make_day_calendar
 
 from services.db import get_today_report, get_weekly_report, get_monthly_report, get_free_period_report
 
@@ -110,15 +110,14 @@ async def handle_empty_calendar_button(query: types.CallbackQuery):
 
 
 def register_handlers_report(dp: Dispatcher):
-    dp.register_message_handler(show_report_type_message, Text('Отчеты'))
-    dp.register_callback_query_handler(show_report_period_message, callback_data['report'].filter(action='choose'))
+    dp.register_message_handler(show_report_type_message, menu_callback_data.filter(type='reports', action='show'))
+    dp.register_callback_query_handler(show_report_period_message, reports_callback_data.filter(action='choose'))
 
-    dp.register_callback_query_handler(show_today_report, callback_data['report'].filter(action='show', period='today'))
-    dp.register_callback_query_handler(show_weekly_report, callback_data['report'].filter(action='show', period='week'))
-    dp.register_callback_query_handler(show_monthly_report,
-                                       callback_data['report'].filter(action='show', period='month'))
+    dp.register_callback_query_handler(show_today_report, reports_callback_data.filter(action='show', period='today'))
+    dp.register_callback_query_handler(show_weekly_report, reports_callback_data.filter(action='show', period='week'))
+    dp.register_callback_query_handler(show_monthly_report, reports_callback_data.filter(action='show', period='month'))
 
-    dp.register_callback_query_handler(show_free_report_calendar, callback_data['report'].filter(action='show', period='free'))
+    dp.register_callback_query_handler(show_free_report_calendar, reports_callback_data.filter(action='show', period='free'))
     dp.register_callback_query_handler(change_calendar_view, callback_data['calendar'].filter(action='change'))
     dp.register_callback_query_handler(get_free_report_start_date, callback_data['calendar'].filter(action='choose', period='day', phase='from'))
     dp.register_callback_query_handler(get_free_report_end_date, callback_data['calendar'].filter(action='choose', period='day', phase='to'))

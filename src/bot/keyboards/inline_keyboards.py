@@ -12,6 +12,7 @@ callback_data = {
     'calendar': CallbackData('calendar', 'type', 'period', 'value', 'action', 'phase', 'phase_1_value')
 }
 menu_callback_data = CallbackData('menu', 'type', 'action')
+reports_callback_data = CallbackData('report', 'type', 'action', 'period')
 category_callback_data = CallbackData('category', 'type', 'action')
 transaction_callback_data = CallbackData('transaction', 'type', 'amount', 'category')
 
@@ -61,29 +62,24 @@ def category_edit_menu(category_name: str, category_type: str) -> types.InlineKe
 
 
 def make_report_type_inline_message():
-    inline_message = types.InlineKeyboardMarkup(row_width=1, inline_keyboard=[
-        [types.InlineKeyboardButton(text='Доход',
-                                    callback_data=callback_data['report'].new('income', 'choose', 'empty')),
-        types.InlineKeyboardButton(text='Расход',
-                                    callback_data=callback_data['report'].new('expense', 'choose', 'empty'))]
+    inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text='Доход', callback_data=reports_callback_data.new('income', 'choose', 'empty')),
+         types.InlineKeyboardButton(text='Расход',
+                                    callback_data=reports_callback_data.new('expense', 'choose', 'empty'))]
     ])
     return inline_message
 
 
 def make_report_period_inline_message(report_type: str):
-    inline_message = types.InlineKeyboardMarkup(row_width=1, inline_keyboard=[
-        [types.InlineKeyboardButton(text='Отчет за сегодня', callback_data=callback_data['report'].new(type=report_type,
-                                                                                                       action='show',
-                                                                                                       period='today')),
-         types.InlineKeyboardButton(text='Отчет за неделю', callback_data=callback_data['report'].new(type=report_type,
-                                                                                                      action='show',
-                                                                                                      period='week'))],
-        [types.InlineKeyboardButton(text='Отчет за месяц', callback_data=callback_data['report'].new(type=report_type,
-                                                                                                     action='show',
-                                                                                                     period='month')),
-         types.InlineKeyboardButton(text='Свой период', callback_data=callback_data['report'].new(type=report_type,
-                                                                                                  action='show',
-                                                                                                  period='free'))]
+    inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+        {types.InlineKeyboardButton(text='Отчет за сегодня',
+                                    callback_data=reports_callback_data.new(type=report_type, action='show', period='today')),
+         types.InlineKeyboardButton(text='Отчет за неделю',
+                                    callback_data=reports_callback_data.new(type=report_type, action='show', period='week'))},
+        [types.InlineKeyboardButton(text='Отчет за месяц',
+                                    callback_data=reports_callback_data.new(type=report_type, action='show', period='month')),
+         types.InlineKeyboardButton(text='Свой период',
+                                    callback_data=reports_callback_data.new(type=report_type, action='show', period='free'))]
     ])
     return inline_message
 
@@ -95,7 +91,8 @@ async def make_year_calendar(report_type: str, current_phase: str, phase_1_value
         year_row = []
         for cell in range(row, row + 3):
             cell_callback_data = callback_data['calendar'].new(type=report_type, period='month', value=str(cell),
-                                                               action='change', phase=current_phase, phase_1_value=phase_1_value)
+                                                               action='change', phase=current_phase,
+                                                               phase_1_value=phase_1_value)
             year_row.append(types.InlineKeyboardButton(text=str(cell), callback_data=cell_callback_data))
         inline_keyboard.row(*year_row)
 
@@ -111,9 +108,11 @@ async def make_month_calendar(report_type: str, date_part: str, current_phase: s
     inline_keyboard.row(header)
     for row in range(1, 13, 3):
         tmp_row = []
-        for cell in range(row, row+3):
-            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=f'{date_part}-{cell}',
-                                                               action='change', phase=current_phase, phase_1_value=phase_1_value)
+        for cell in range(row, row + 3):
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day',
+                                                               value=f'{date_part}-{cell}',
+                                                               action='change', phase=current_phase,
+                                                               phase_1_value=phase_1_value)
             tmp_row.append(types.InlineKeyboardButton(text=MONTHS_MAPPING[cell], callback_data=cell_callback_data))
         inline_keyboard.row(*tmp_row)
     return inline_keyboard
@@ -130,7 +129,8 @@ async def make_day_calendar(report_type: str, date_part: str, current_phase: str
 
     header = f'{show_month} {show_year}'
     header_callback_data = callback_data['calendar'].new(type=report_type, period='month', value=show_year,
-                                                         action='change', phase=current_phase, phase_1_value=phase_1_value)
+                                                         action='change', phase=current_phase,
+                                                         phase_1_value=phase_1_value)
 
     inline_keyboard.row(types.InlineKeyboardButton(text=header, callback_data=header_callback_data))
     week_day_row = [types.InlineKeyboardButton(text=name, callback_data=callback_data['calendar'].new(
@@ -146,8 +146,10 @@ async def make_day_calendar(report_type: str, date_part: str, current_phase: str
             else:
                 button_text = ' '
                 cell_callback_data_action = 'no_action'
-            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day', value=f'{date_part}-{str(cell)}',
-                                                               action=cell_callback_data_action, phase=current_phase, phase_1_value=phase_1_value)
+            cell_callback_data = callback_data['calendar'].new(type=report_type, period='day',
+                                                               value=f'{date_part}-{str(cell)}',
+                                                               action=cell_callback_data_action, phase=current_phase,
+                                                               phase_1_value=phase_1_value)
             day_row.append(types.InlineKeyboardButton(text=button_text, callback_data=cell_callback_data))
         inline_keyboard.row(*day_row)
 
