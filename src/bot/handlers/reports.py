@@ -4,9 +4,9 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher.filters import Text
 
 from bot.init_bot import bot
-from bot.keyboards.inline_keyboards import menu_callback_data
-from bot.keyboards.inline_keyboards import make_report_type_inline_message, make_report_period_inline_message, \
-    reports_callback_data, calendar_callback_data, make_year_calendar, make_month_calendar, make_day_calendar
+from bot.keyboards.inline_keyboards import menu_callback_data, reports_callback_data, calendar_callback_data
+from bot.keyboards.inline_keyboards import make_report_type_inline_message, make_report_period_inline_message, make_main_menu_keyboard
+from bot.keyboards.inline_keyboards import make_year_calendar, make_month_calendar, make_day_calendar
 
 from services.db import get_today_report, get_weekly_report, get_monthly_report, get_free_period_report
 
@@ -98,8 +98,10 @@ async def get_free_report_end_date(query: types.CallbackQuery, callback_data: di
     period_to = dt.datetime.strptime(period_to, '%Y-%m-%d').strftime('%Y-%m-%d')
     report = await get_free_period_report(user_id=str(user_id), report_type=report_type,
                                           msg_template=free_report_template, period_start=period_from, period_end=period_to)
-    await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
-    await bot.delete_message(chat_id=query.message.chat.id, message_id=query.message.message_id)
+    await query.message.answer(text=report)
+    inline_message = make_main_menu_keyboard()
+    await bot.edit_message_text(text='Выберите действие', chat_id=query.message.chat.id,
+                                message_id=query.message.message_id, reply_markup=inline_message)
 
 
 async def handle_empty_calendar_button(query: types.CallbackQuery):
