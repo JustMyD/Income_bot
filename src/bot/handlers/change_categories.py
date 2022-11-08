@@ -62,8 +62,7 @@ async def callback_add_new_category_start(query: types.CallbackQuery, callback_d
     category_data = callback_data.get('type')
     if category_data:
         category_type = category_data.split('-')[0]
-    message = await bot.send_message(text='Введите название категории', chat_id=query.message.chat.id,
-                                     message_id=query.message.message_id)
+    message = await bot.send_message(text='Введите название категории', chat_id=query.message.chat.id)
     async with state.proxy() as data:
         data['bot_message_id'] = message.message_id
         data['main_message_id'] = query.message.message_id
