@@ -110,7 +110,7 @@ async def handle_empty_calendar_button(query: types.CallbackQuery):
 
 
 def register_handlers_report(dp: Dispatcher):
-    dp.register_message_handler(show_report_type_message, menu_callback_data.filter(type='reports', action='show'))
+    dp.register_callback_query_handler(show_report_type_message, menu_callback_data.filter(type='reports', action='show'))
     dp.register_callback_query_handler(show_report_period_message, reports_callback_data.filter(action='choose'))
 
     dp.register_callback_query_handler(show_today_report, reports_callback_data.filter(action='show', period='today'))
