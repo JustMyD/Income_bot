@@ -118,8 +118,8 @@ def register_handlers_report(dp: Dispatcher):
     dp.register_callback_query_handler(show_monthly_report, reports_callback_data.filter(action='show', period='month'))
 
     dp.register_callback_query_handler(show_free_report_calendar, reports_callback_data.filter(action='show', period='free'))
-    dp.register_callback_query_handler(change_calendar_view, callback_data['calendar'].filter(action='change'))
-    dp.register_callback_query_handler(get_free_report_start_date, callback_data['calendar'].filter(action='choose', period='day', phase='from'))
-    dp.register_callback_query_handler(get_free_report_end_date, callback_data['calendar'].filter(action='choose', period='day', phase='to'))
-
-    dp.register_callback_query_handler(handle_empty_calendar_button, callback_data['calendar'].filter(period='day', action='no_action'))
+    # dp.register_callback_query_handler(change_calendar_view, callback_data['calendar'].filter(action='change'))
+    # dp.register_callback_query_handler(get_free_report_start_date, callback_data['calendar'].filter(action='choose', period='day', phase='from'))
+    # dp.register_callback_query_handler(get_free_report_end_date, callback_data['calendar'].filter(action='choose', period='day', phase='to'))
+    #
+    # dp.register_callback_query_handler(handle_empty_calendar_button, callback_data['calendar'].filter(period='day', action='no_action'))
