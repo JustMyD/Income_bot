@@ -32,8 +32,8 @@ async def callback_show_categories_change_menu(query: types.CallbackQuery, callb
 async def callback_edit_expense_category(query: types.CallbackQuery, callback_data: dict):
     category_type = callback_data.get('action')
     if category_type:
-        category_type = category_type.split(':')[0]
-        category_name = category_type.split(':')[1]
+        category_type = category_type.split('-')[0]
+        category_name = category_type.split('-')[1]
     inline_message = category_edit_menu(category_name, category_type=category_type)
     await bot.edit_message_text(text=f"Категория - {category_name}", chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
@@ -42,8 +42,8 @@ async def callback_edit_expense_category(query: types.CallbackQuery, callback_da
 async def callback_remove_category(query: types.CallbackQuery, callback_data: dict):
     category_type = callback_data.get('action')
     if category_type:
-        category_type = category_type.split(':')[0]
-        category_name = category_type.split(':')[1]
+        category_type = category_type.split('-')[0]
+        category_name = category_type.split('-')[1]
     user_categories = get_user_categories(query.from_user.id, categories_type=category_type)
     user_categories = user_categories.split(', ') if user_categories else []
     if user_categories:
@@ -61,7 +61,7 @@ async def callback_add_new_category_start(query: types.CallbackQuery, callback_d
     await FSMExpenseCategoryAdd.category_add.set()
     category_type = callback_data.get('action')
     if category_type:
-        category_type = category_type.split(':')[0]
+        category_type = category_type.split('-')[0]
     message = await bot.send_message(text='Введите название категории', chat_id=query.message.chat.id,
                                      message_id=query.message.message_id)
     async with state.proxy() as data:
@@ -108,7 +108,7 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
 async def get_back_to_categories_menu(query: types.CallbackQuery, callback_data: dict):
     category_type = callback_data.get('action')
     if category_type:
-        category_type = category_type.split(':')[0]
+        category_type = category_type.split('-')[0]
     user_categories = get_user_categories(query.from_user.id, categories_type=category_type)
     user_categories = user_categories.split(', ') if user_categories else []
     if user_categories:
