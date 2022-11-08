@@ -15,7 +15,7 @@ class FSMIncomeCategoryAdd(StatesGroup):
 
 
 async def callback_show_categories_income(message: types.Message):
-    user_categories = get_user_categories(message.from_user.id, type='income')
+    user_categories = get_user_categories(message.from_user.id, categories_type='income')
     user_categories = user_categories.split(', ') if user_categories else []
     if not user_categories:
         print("Doesn't have any category")
@@ -34,7 +34,7 @@ async def callback_edit_income_category(query: types.CallbackQuery):
 
 async def callback_remove_income_category(query: types.CallbackQuery):
     category_name = query.data.split(':')[-1]
-    user_categories = get_user_categories(query.from_user.id, type='income')
+    user_categories = get_user_categories(query.from_user.id, categories_type='income')
     user_categories = user_categories.split(', ') if user_categories else []
     message_id = query.message.message_id
     user_id = query.from_user.id
@@ -42,7 +42,7 @@ async def callback_remove_income_category(query: types.CallbackQuery):
     if user_categories:
         user_categories.remove(category_name)
         user_categories_str = ', '.join(user_categories)
-        await update_user_categories(user_id=user_id, categories=user_categories_str, type='income')
+        await update_user_categories(user_id=user_id, categories=user_categories_str, categories_type='income')
         inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
         await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
                                     message_id=message_id, reply_markup=inline_message)
@@ -65,7 +65,7 @@ async def callback_add_income_category_end(message: types.Message, state: FSMCon
     category_name = category_name.replace(',', ';')
     chat_id = message.chat.id
     last_user_msg = message.message_id
-    user_categories = get_user_categories(message.from_user.id, type='income')
+    user_categories = get_user_categories(message.from_user.id, categories_type='income')
     user_categories = user_categories.split(', ') if user_categories else []
     if len(category_name) > 25:
         await message.answer(text='Слишком длинное название категории, введите короче')
@@ -76,7 +76,7 @@ async def callback_add_income_category_end(message: types.Message, state: FSMCon
                     user_categories.append(category_name)
                     inline_message = categories_main_menu(user_categories, category_menu='income_menu', count='0')
                     user_categories = ', '.join(user_categories)
-                    await update_user_categories(user_id=message.from_user.id, categories=user_categories, type='income')
+                    await update_user_categories(user_id=message.from_user.id, categories=user_categories, categories_type='income')
                     await bot.edit_message_text(chat_id=chat_id, text='Выберите категорию:',
                                                 message_id=data['inline_message_id'], reply_markup=inline_message)
                 else:
@@ -91,7 +91,7 @@ async def callback_add_income_category_end(message: types.Message, state: FSMCon
 
 
 async def get_back_to_income_categories(query: types.CallbackQuery):
-    user_categories = get_user_categories(query.from_user.id, type='income')
+    user_categories = get_user_categories(query.from_user.id, categories_type='income')
     user_categories = user_categories.split(', ') if user_categories else []
     message_id = query.message.message_id
     chat_id = query.message.chat.id

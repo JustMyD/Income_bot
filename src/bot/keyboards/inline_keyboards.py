@@ -11,31 +11,47 @@ callback_data = {
     'report': CallbackData('report', 'type', 'action', 'period'),
     'calendar': CallbackData('calendar', 'type', 'period', 'value', 'action', 'phase', 'phase_1_value')
 }
+menu_callback_data = CallbackData('menu', 'type', 'action')
+category_callback_data = CallbackData('category', 'type', 'action')
+transaction_callback_data = CallbackData('transaction', 'type', 'amount', 'category')
 
 
-def categories_main_menu(categories: list, category_menu: str, count: str) -> types.InlineKeyboardMarkup:
-    inline_message = types.InlineKeyboardMarkup(row_width=1)
-    for category in categories:
-        inline_message.insert(types.InlineKeyboardButton(text=f'{category}',
-                                                         callback_data=callback_data['category'].new(category_menu,
-                                                                                                     'show', count,
-                                                                                                     category)))
-    if category_menu != 'main_menu':
-        inline_message.insert(types.InlineKeyboardButton(text='Добавить категорию',
-                                                         callback_data=callback_data['category'].new(category_menu,
-                                                                                                     'add', count,
-                                                                                                     'new')))
-
+def make_main_menu_keyboard() -> types.InlineKeyboardMarkup:
+    inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text='Получил',
+                                    callback_data=menu_callback_data.new(type='income', action='show')),
+         types.InlineKeyboardButton(text='Потратил',
+                                    callback_data=menu_callback_data.new(type='expense', action='show'))],
+        [types.InlineKeyboardButton(text='Настройки',
+                                    callback_data=menu_callback_data.new(type='preferences', action='show'))]
+    ])
     return inline_message
 
 
-def category_edit_menu(category_name: str, category_menu: str) -> types.InlineKeyboardMarkup:
-    inline_message = types.InlineKeyboardMarkup(row_width=1, inline_keyboard=[
+def categories_main_menu(categories: list, amount: str, transaction: str) -> types.InlineKeyboardMarkup:
+    inline_message = types.InlineKeyboardMarkup(row_width=1)
+    for category in categories:
+        callback_data_button = transaction_callback_data.new(type=transaction, amount=amount, category=category)
+        inline_message.insert(types.InlineKeyboardButton(text=f'{category}', callback_data=callback_data_button))
+    return inline_message
+
+
+def categories_change_menu(categories: list, category_type: str):
+    inline_message = types.InlineKeyboardMarkup()
+    for category in categories:
+        callback_data_button = category_callback_data.new(type=f'{category_type}:{category}', action='edit')
+        inline_message.add(types.InlineKeyboardButton(text=category, callback_data=callback_data_button))
+    callback_data_button = category_callback_data.new(type=category_type, action='add')
+    inline_message.add(types.InlineKeyboardButton(text='Добавить категорию', callback_data=callback_data_button))
+
+
+def category_edit_menu(category_name: str, category_type: str) -> types.InlineKeyboardMarkup:
+    inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text='Удалить категорию',
-                                    callback_data=callback_data['category'].new(category_menu, 'remove', '0',
-                                                                                category_name))],
+                                    callback_data=category_callback_data.new(type=f'{category_type}:{category_name}',
+                                                                             action='remove'))],
         [types.InlineKeyboardButton(text='Назад',
-                                    callback_data=callback_data['category'].new(category_menu, 'back', '0', 'main_menu'))]
+                                    callback_data=category_callback_data.new(type=category_type, action='back'))]
     ])
     return inline_message
 

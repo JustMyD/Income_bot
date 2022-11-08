@@ -10,10 +10,10 @@ import datetime as dt
 from config.configuration import DB_CONN
 
 
-def get_user_categories(user_id: int, type: str) -> str:
+def get_user_categories(user_id: int, categories_type: str) -> str:
     """
     Делаем запрос к БД на получение списка категорий клиента
-    :param type: Вид категорий
+    :param categories_type: Вид категорий
     :param user_id: ID в телеграмм
     :return: Список категорий
     """
@@ -21,13 +21,14 @@ def get_user_categories(user_id: int, type: str) -> str:
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
                     password=DB_CONN['db_pass'], host=DB_CONN['db_host'], port=DB_CONN['db_port']) as db_connect:
         with db_connect.cursor() as db_cursor:
+            print(user_id)
             try:
-                if type == 'income':
+                if categories_type == 'income':
                     db_cursor.execute('''
                     select categories_income from income_bot.users 
                     where telegram_id = %s
                     ''', (str(user_id), ))
-                elif type == 'expense':
+                elif categories_type == 'expense':
                     db_cursor.execute('''
                     select categories_expense from income_bot.users 
                     where telegram_id = %s
@@ -39,9 +40,10 @@ def get_user_categories(user_id: int, type: str) -> str:
     return categories
 
 
-async def update_user_categories(user_id: int, categories: str, type: str) -> bool:
+async def update_user_categories(user_id: int, categories: str, categories_type: str) -> bool:
     """
     Обновляем категории пользователя
+    :param categories_type: 
     :param user_id: TelegramId пользователя
     :param categories: Строка с категориями
     :return:
@@ -51,11 +53,11 @@ async def update_user_categories(user_id: int, categories: str, type: str) -> bo
                     password=DB_CONN['db_pass'], host=DB_CONN['db_host'], port=DB_CONN['db_port']) as db_connect:
         with db_connect.cursor() as db_cursor:
             try:
-                if type == 'income':
+                if categories_type == 'income':
                     db_cursor.execute('''
                     update income_bot.users set categories_income = %s where telegram_id = %s
                     ''', (categories, str(user_id)))
-                elif type == 'expense':
+                elif categories_type == 'expense':
                     db_cursor.execute('''
                     update income_bot.users set categories_expense = %s where telegram_id = %s
                     ''', (categories, str(user_id)))
