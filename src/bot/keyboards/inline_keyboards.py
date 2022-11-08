@@ -43,6 +43,8 @@ def categories_change_menu(categories: list, category_type: str) -> types.Inline
         inline_message.add(types.InlineKeyboardButton(text=category, callback_data=callback_data_button))
     callback_data_button = category_callback_data.new(type=category_type, action='add')
     inline_message.add(types.InlineKeyboardButton(text='Добавить категорию', callback_data=callback_data_button))
+    callback_data_button = menu_callback_data.new(type='main_menu', action='show')
+    inline_message.add(types.InlineKeyboardButton(text='Главное меню', callback_data=callback_data_button))
 
     return inline_message
 
