@@ -19,10 +19,10 @@ monthly_report_template = 'Всего {kind} за месяц: '
 free_report_template = 'Всего {kind} за выбранный период: '
 
 
-async def show_report_type_message(message: types.Message):
+async def show_report_type_message(query: types.CallbackQuery):
     inline_message = make_report_type_inline_message()
-    await message.answer(text='Выберите тип отчета', reply_markup=inline_message)
-    await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+    await bot.edit_message_text(text='Выберите тип отчета', chat_id=query.message.chat.id,
+                                message_id=query.message.message_id, reply_markup=inline_message)
 
 
 async def show_report_period_message(query: types.CallbackQuery, callback_data: dict):
