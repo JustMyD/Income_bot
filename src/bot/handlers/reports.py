@@ -2,7 +2,6 @@ import asyncio
 import datetime as dt
 
 from aiogram import types, Dispatcher
-from aiogram.dispatcher.filters import Text
 
 from bot.init_bot import bot
 from bot.keyboards.inline_keyboards import menu_callback_data, reports_callback_data, calendar_callback_data

@@ -6,11 +6,6 @@ from aiogram.utils.callback_data import CallbackData
 
 from bot.keyboards.keyboards_mapping import MONTHS_MAPPING
 
-callback_data = {
-    'category': CallbackData('category', 'menu', 'action', 'value', 'name'),
-    'report': CallbackData('report', 'type', 'action', 'period'),
-    'calendar': CallbackData('calendar', 'type', 'period', 'value', 'action', 'phase', 'phase_1_value')
-}
 menu_callback_data = CallbackData('menu', 'type', 'action')
 reports_callback_data = CallbackData('report', 'type', 'action', 'period')
 category_callback_data = CallbackData('category', 'type', 'action')

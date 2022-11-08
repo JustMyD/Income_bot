@@ -21,7 +21,6 @@ def get_user_categories(user_id: int, categories_type: str) -> str:
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'],
                     password=DB_CONN['db_pass'], host=DB_CONN['db_host'], port=DB_CONN['db_port']) as db_connect:
         with db_connect.cursor() as db_cursor:
-            print(user_id)
             try:
                 if categories_type == 'income':
                     db_cursor.execute('''
