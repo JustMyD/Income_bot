@@ -30,7 +30,7 @@ async def callback_show_categories_change_menu(query: types.CallbackQuery, callb
 
 
 async def callback_edit_expense_category(query: types.CallbackQuery, callback_data: dict):
-    category_type = callback_data.get('action')
+    category_type = callback_data.get('type')
     if category_type:
         category_type = category_type.split('-')[0]
         category_name = category_type.split('-')[1]
@@ -40,7 +40,7 @@ async def callback_edit_expense_category(query: types.CallbackQuery, callback_da
 
 
 async def callback_remove_category(query: types.CallbackQuery, callback_data: dict):
-    category_type = callback_data.get('action')
+    category_type = callback_data.get('type')
     if category_type:
         category_type = category_type.split('-')[0]
         category_name = category_type.split('-')[1]
@@ -59,7 +59,7 @@ async def callback_remove_category(query: types.CallbackQuery, callback_data: di
 
 async def callback_add_new_category_start(query: types.CallbackQuery, callback_data: dict, state: FSMContext):
     await FSMExpenseCategoryAdd.category_add.set()
-    category_type = callback_data.get('action')
+    category_type = callback_data.get('type')
     if category_type:
         category_type = category_type.split('-')[0]
     message = await bot.send_message(text='Введите название категории', chat_id=query.message.chat.id,
@@ -106,7 +106,7 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
 
 
 async def get_back_to_categories_menu(query: types.CallbackQuery, callback_data: dict):
-    category_type = callback_data.get('action')
+    category_type = callback_data.get('type')
     if category_type:
         category_type = category_type.split('-')[0]
     user_categories = get_user_categories(query.from_user.id, categories_type=category_type)
