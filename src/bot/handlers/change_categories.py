@@ -20,7 +20,7 @@ class FSMExpenseCategoryRename(StatesGroup):
 
 async def callback_show_categories_change_menu(query: types.CallbackQuery, callback_data: dict):
     categories_type = callback_data.get('action')
-    user_categories = get_user_categories(query.message.from_user.id, categories_type=categories_type)
+    user_categories = get_user_categories(query.from_user.id, categories_type=categories_type)
     user_categories = user_categories.split(', ') if user_categories else []
     if not user_categories:
         print("Doesn't have any category")
