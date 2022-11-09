@@ -40,14 +40,8 @@ async def expense_state_sum(message: types.Message, state: FSMContext):
             data['remove_msg'] = message.message_id
             transaction_type = data.get('transaction_type')
             user_categories = get_user_categories(message.from_user.id, categories_type=transaction_type).split(', ')
-            user_categories = True
             if user_categories:
-                inline_message = categories_main_menu(user_categories, amount=income_sum, transaction=transaction_type)
-                inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
-                    [types.InlineKeyboardButton(text='1',
-                                                callback_data=transaction_callback_data.new(type='income', amount='100',
-                                                                                            category='tmp'))]
-                ])
+                inline_message = categories_main_menu(user_categories, amount=expense_sum, transaction=transaction_type)
                 await bot.edit_message_text(text='Выберите категорию:', chat_id=message.chat.id,
                                             message_id=data['main_msg'], reply_markup=inline_message)
             else:
