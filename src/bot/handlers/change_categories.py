@@ -81,7 +81,7 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
                         await bot.delete_message(chat_id=message.chat.id, message_id=elem)
                 bot_message = await message.answer(text='Слишком длинное название категории, введите короче')
                 data['remove_msg'].append(bot_message.message_id)
-            elif len(category_name) < 10:
+            elif len(user_categories) < 10:
                 if category_name not in user_categories:
                     user_categories.append(category_name)
                     inline_message = categories_change_menu(user_categories, category_type=category_type)
@@ -94,7 +94,7 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
                     repeat_category = await message.answer(text='Такая категория уже существует')
                     await asyncio.sleep(2)
                     await bot.delete_message(chat_id=message.chat.id, message_id=repeat_category.message_id)
-            elif len(category_name) == 10:
+            elif len(user_categories) == 10:
                 await message.answer(text='Нельзя добавить больше 10 категорий')
 
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
