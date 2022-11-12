@@ -36,7 +36,7 @@ async def callback_edit_category(query: types.CallbackQuery, callback_data: dict
         category_name = category_data.split('-')[1]
     inline_message = category_edit_menu(category_name, category_type=category_type)
     out_msg = f'Категория - {category_name}\n'
-    report = get_category_short_report(user_id=query.from_user.id, report_type=category_type)
+    report = await get_category_short_report(user_id=str(query.from_user.id), report_type=category_type, category_name=category_name)
     out_msg += report
     await bot.edit_message_text(text=out_msg, chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
