@@ -47,7 +47,12 @@ async def callback_show_preferences_menu(query: types.CallbackQuery):
 
 
 async def callback_show_help(query: types.CallbackQuery):
-    await query.answer(text=reference_msg, show_alert=True)
+    inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text='Главное меню', callback_data=menu_callback_data.new(type='main_menu',
+                                                                                              action='show'))]
+    ])
+    await bot.edit_message_text(text=reference_msg, chat_id=query.message.chat.id, message_id=query.message.message_id,
+                                reply_markup=inline_message)
 
 
 def register_handlers_main_menu(dp: Dispatcher):
