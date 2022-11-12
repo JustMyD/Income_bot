@@ -53,7 +53,3 @@ MONTHS_MAPPING = {
     11: 'Ноябрь',
     12: 'Декабрь'
 }
-
-
-if __name__ == '__main__':
-    print(MAIN_MENU['Главное меню'])

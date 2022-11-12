@@ -5,7 +5,8 @@ from aiogram import types, Dispatcher
 
 from bot.init_bot import bot
 from bot.keyboards.inline_keyboards import menu_callback_data, reports_callback_data, calendar_callback_data
-from bot.keyboards.inline_keyboards import make_report_type_inline_message, make_report_period_inline_message, make_main_menu_keyboard
+from bot.keyboards.inline_keyboards import make_report_type_inline_message, make_report_period_inline_message, \
+    make_main_menu_keyboard
 from bot.keyboards.inline_keyboards import make_year_calendar, make_month_calendar, make_day_calendar
 
 from services.db import get_today_report, get_weekly_report, get_monthly_report, get_free_period_report
@@ -37,14 +38,36 @@ async def show_today_report(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
     user_id = query.from_user.id
     report = await get_today_report(user_id=str(user_id), report_type=report_type, msg_template=today_report_template)
-    await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
+    if report:
+        callback_data_home_button = menu_callback_data.new(type='main_menu', action='show')
+        inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+            [types.InlineKeyboardButton(text='Главное меню', callback_data=callback_data_home_button)]
+        ])
+        await bot.edit_message_text(text=report, chat_id=query.message.chat.id, message_id=query.message.message_id,
+                                    reply_markup=inline_message)
+    else:
+        await query.answer(text='Произошла ошибка, попробуйте еще раз', show_alert=True)
+        inline_message = make_main_menu_keyboard()
+        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id,
+                                    message_id=query.message.message_id, reply_markup=inline_message, parse_mode='HTML')
 
 
 async def show_weekly_report(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
     user_id = query.from_user.id
     report = await get_weekly_report(user_id=str(user_id), report_type=report_type, msg_template=weekly_report_template)
-    await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
+    if report:
+        callback_data_home_button = menu_callback_data.new(type='main_menu', action='show')
+        inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+            [types.InlineKeyboardButton(text='Главное меню', callback_data=callback_data_home_button)]
+        ])
+        await bot.edit_message_text(text=report, chat_id=query.message.chat.id, message_id=query.message.message_id,
+                                    reply_markup=inline_message)
+    else:
+        await query.answer(text='Произошла ошибка, попробуйте еще раз', show_alert=True)
+        inline_message = make_main_menu_keyboard()
+        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id,
+                                    message_id=query.message.message_id, reply_markup=inline_message, parse_mode='HTML')
 
 
 async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
@@ -52,14 +75,25 @@ async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
     user_id = query.from_user.id
     report = await get_monthly_report(user_id=str(user_id), report_type=report_type,
                                       msg_template=monthly_report_template)
-    await query.message.answer(text=report, reply_markup=types.ReplyKeyboardRemove())
+    if report:
+        callback_data_home_button = menu_callback_data.new(type='main_menu', action='show')
+        inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+            [types.InlineKeyboardButton(text='Главное меню', callback_data=callback_data_home_button)]
+        ])
+        await bot.edit_message_text(text=report, chat_id=query.message.chat.id, message_id=query.message.message_id,
+                                    reply_markup=inline_message)
+    else:
+        await query.answer(text='Произошла ошибка, попробуйте еще раз', show_alert=True)
+        inline_message = make_main_menu_keyboard()
+        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id,
+                                    message_id=query.message.message_id, reply_markup=inline_message, parse_mode='HTML')
 
 
 async def show_free_report_calendar(query: types.CallbackQuery, callback_data: dict):
     report_type = callback_data.get('type')
     cur_date = str(dt.datetime.now().date())
     inline_message = await make_day_calendar(report_type, cur_date[:-3], current_phase='from', phase_1_value='')
-    await bot.edit_message_text(text='Выберите дату начала периода', chat_id=query.message.chat.id, 
+    await bot.edit_message_text(text='Выберите дату начала периода', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 
@@ -72,9 +106,11 @@ async def change_calendar_view(query: types.CallbackQuery, callback_data: dict):
     if calendar_period == 'year':
         inline_message = await make_year_calendar(report_type, current_phase=current_phase, phase_1_value=phase_1_value)
     elif calendar_period == 'month':
-        inline_message = await make_month_calendar(report_type, date_part, current_phase=current_phase, phase_1_value=phase_1_value)
+        inline_message = await make_month_calendar(report_type, date_part, current_phase=current_phase,
+                                                   phase_1_value=phase_1_value)
     elif calendar_period == 'day':
-        inline_message = await make_day_calendar(report_type, date_part, current_phase=current_phase, phase_1_value=phase_1_value)
+        inline_message = await make_day_calendar(report_type, date_part, current_phase=current_phase,
+                                                 phase_1_value=phase_1_value)
     await bot.edit_message_text(text='Выберите дату начала периода', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
@@ -97,7 +133,8 @@ async def get_free_report_end_date(query: types.CallbackQuery, callback_data: di
     period_to = callback_data.get('value')
     period_to = dt.datetime.strptime(period_to, '%Y-%m-%d').strftime('%Y-%m-%d')
     report = await get_free_period_report(user_id=str(user_id), report_type=report_type,
-                                          msg_template=free_report_template, period_start=period_from, period_end=period_to)
+                                          msg_template=free_report_template, period_start=period_from,
+                                          period_end=period_to)
     inline_message = make_main_menu_keyboard()
     await bot.edit_message_text(text='Выберите действие', chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)

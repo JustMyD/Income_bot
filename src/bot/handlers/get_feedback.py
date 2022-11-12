@@ -13,7 +13,7 @@ class FSMFeedback(StatesGroup):
 
 async def start_getting_feedback(message: types.Message):
     await FSMFeedback.feedback_start.set()
-    await message.answer(text='Введите сообщение', reply_markup=types.ReplyKeyboardRemove())
+    await message.answer(text='Введите сообщение')
 
 
 async def send_feedback_to_owner(message: types.Message, state=FSMContext):
