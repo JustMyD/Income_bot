@@ -15,11 +15,11 @@ calendar_callback_data = CallbackData('calendar', 'type', 'period', 'value', 'ac
 
 def make_main_menu_keyboard() -> types.InlineKeyboardMarkup:
     inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text='Получил',
+        [types.InlineKeyboardButton(text='Получил 💵➕💵',
                                     callback_data=menu_callback_data.new(type='income', action='show')),
-         types.InlineKeyboardButton(text='Потратил',
+         types.InlineKeyboardButton(text='Потратил 💸➖💸',
                                     callback_data=menu_callback_data.new(type='expense', action='show'))],
-        [types.InlineKeyboardButton(text='Настройки',
+        [types.InlineKeyboardButton(text='Настройки ⚙',
                                     callback_data=menu_callback_data.new(type='preferences', action='show'))]
     ])
     return inline_message
@@ -39,13 +39,13 @@ def categories_change_menu(categories: list, category_type: str) -> types.Inline
     callback_data_preferences_menu = menu_callback_data.new(type='preferences', action='show')
     inline_message.row(
         types.InlineKeyboardButton(text='🔙 Назад', callback_data=callback_data_preferences_menu),
-        types.InlineKeyboardButton(text='➕ Добавить категорию', callback_data=callback_data_add_button)
+        types.InlineKeyboardButton(text='🖋 Добавить категорию', callback_data=callback_data_add_button)
     )
     for category in categories:
         callback_data_button = category_callback_data.new(type=category_type, name=category, action='edit')
         inline_message.add(types.InlineKeyboardButton(text=category, callback_data=callback_data_button))
     callback_data_home_button = menu_callback_data.new(type='main_menu', action='show')
-    inline_message.add(types.InlineKeyboardButton(text='🏡Главное меню', callback_data=callback_data_home_button))
+    inline_message.add(types.InlineKeyboardButton(text='🏦 Главное меню', callback_data=callback_data_home_button))
     return inline_message
 
 
