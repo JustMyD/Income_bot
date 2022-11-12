@@ -16,7 +16,8 @@ reference_msg = '''
 
 async def show_main_menu(message: types.Message):
     inline_message = make_main_menu_keyboard()
-    await message.answer(text='Выберите действие:            &#x200D;', reply_markup=inline_message, parse_mode='HTML')
+    await bot.edit_message_text(text='Выберите действие:            &#x200D;', reply_markup=inline_message,
+                                chat_id=message.chat.id, message_id=message.message_id, parse_mode='HTML')
 
 
 async def show_main_menu_inline(query: types.CallbackQuery):
