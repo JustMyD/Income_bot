@@ -20,7 +20,11 @@ def make_main_menu_keyboard() -> types.InlineKeyboardMarkup:
          types.InlineKeyboardButton(text='Потратил    ➖',
                                     callback_data=menu_callback_data.new(type='expense', action='show'))],
         [types.InlineKeyboardButton(text='Настройки ⚙',
-                                    callback_data=menu_callback_data.new(type='preferences', action='show'))]
+                                    callback_data=menu_callback_data.new(type='preferences', action='show'))],
+        [types.InlineKeyboardButton(text='Оставить отзыв 📬',
+                                    callback_data=menu_callback_data.new(type='feedback', action='send'))],
+        [types.InlineKeyboardButton(text='Справка 💬',
+                                    callback_data=menu_callback_data.new(type='help', action='show'))]
     ])
     return inline_message
 

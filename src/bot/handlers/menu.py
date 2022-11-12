@@ -3,6 +3,20 @@ from bot.keyboards.inline_keyboards import make_main_menu_keyboard, menu_callbac
 
 from aiogram import types, Dispatcher
 
+reference_msg = '''
+Чтобы открыть главное меню - выберите из списка команд /main
+Добавить приход:
+Главное меню -> Приход
+Добавить расход:
+Главное меню -> Расход
+Получить отчет за период:
+Главное меню -> Настройки -> Отчеты
+Добавить или удалить категории для прихода:
+Главное меню -> Настройки -> Категории прихода
+Добавить или удалить категории для расхода:
+Главное меню -> Настройки -> Категории расхода
+'''
+
 
 async def show_main_menu(message: types.Message):
     inline_message = make_main_menu_keyboard()
@@ -32,9 +46,14 @@ async def callback_show_preferences_menu(query: types.CallbackQuery):
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 
+async def callback_show_help(query: types.CallbackQuery):
+    await query.answer(text=reference_msg, show_alert=True)
+
+
 def register_handlers_main_menu(dp: Dispatcher):
     dp.register_message_handler(show_main_menu, commands='menu')
     dp.register_callback_query_handler(show_main_menu_inline, menu_callback_data.filter(type='main_menu',
                                                                                         action='show'))
     dp.register_callback_query_handler(callback_show_preferences_menu, menu_callback_data.filter(type='preferences',
                                                                                                  action='show'))
+    dp.register_callback_query_handler(callback_show_help, menu_callback_data.filter(type='help', action='show'))

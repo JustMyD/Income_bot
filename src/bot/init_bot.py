@@ -9,8 +9,6 @@
 """
 from aiogram import Bot, Dispatcher, types
 from aiogram.contrib.fsm_storage.memory import MemoryStorage
-from aiogram.dispatcher.filters.state import State, StatesGroup
-from aiogram.utils.callback_data import CallbackData
 
 from bot.keyboards.inline_keyboards import make_main_menu_keyboard
 from config.configuration import API_TOKEN, WEBHOOK_HOST
@@ -20,7 +18,6 @@ from services import user
 bot = Bot(token=API_TOKEN)
 storage = MemoryStorage()
 dp = Dispatcher(bot, storage=storage)
-callback = CallbackData('test', 'type', 'name', 'value')
 
 
 @dp.message_handler(commands='start')
@@ -43,11 +40,6 @@ async def show_help(message: types.Message):
     await message.answer(text=reference_msg)
 
 
-class FSMTestState(StatesGroup):
-    state_one = State()
-    state_two = State()
-
-
 async def on_startup(dispatcher):
     await bot.set_webhook(WEBHOOK_HOST)
 
@@ -60,18 +52,4 @@ intro_message = '''
 Для того чтобы открыть список команд бота воспользуйтесь кнопкой меню, она находится слева в строке ввода текста.
 Если вы столкнулись с трудностью - выберите /help чтобы посмотреть справку
 Если хотите оставить пожелание или дать обратную связь - выберите /feedback чтобы оставить анонимный отзыв 
-'''
-
-reference_msg = '''
-Чтобы открыть главное меню - выберите из списка команд /main
-Добавить приход:
-Главное меню -> Приход
-Добавить расход:
-Главное меню -> Расход
-Получить отчет за период:
-Главное меню -> Настройки -> Отчеты
-Добавить или удалить категории для прихода:
-Главное меню -> Настройки -> Категории прихода
-Добавить или удалить категории для расхода:
-Главное меню -> Настройки -> Категории расхода
 '''
