@@ -25,7 +25,7 @@ async def callback_show_categories_change_menu(query: types.CallbackQuery, callb
     if not user_categories:
         print("Doesn't have any category")
     inline_message = categories_change_menu(user_categories, category_type=categories_type)
-    await bot.edit_message_text(text='Выберите категорию:', chat_id=query.message.chat.id,
+    await bot.edit_message_text(text='Выберите категорию:                        &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 

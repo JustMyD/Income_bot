@@ -18,7 +18,7 @@ async def callback_show_preferences_menu(query: CallbackQuery):
         [types.InlineKeyboardButton(text='Главное меню', callback_data=menu_callback_data.new(type='main_menu',
                                                                                               action='show'))],
     ])
-    await bot.edit_message_text(text='Что хотите изменить', chat_id=query.message.chat.id,
+    await bot.edit_message_text(text='Что хотите изменить:          &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 

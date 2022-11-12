@@ -35,14 +35,13 @@ def categories_main_menu(categories: list, amount: str, transaction: str) -> typ
 
 def categories_change_menu(categories: list, category_type: str) -> types.InlineKeyboardMarkup:
     inline_message = types.InlineKeyboardMarkup()
+    callback_data_add_button = category_callback_data.new(type=category_type, action='add')
+    callback_data_home_button = menu_callback_data.new(type='main_menu', action='show')
+    inline_message.row(types.InlineKeyboardButton(text='➕Добавить категорию', callback_data=callback_data_add_button),
+                       types.InlineKeyboardButton(text='🏡Главное меню', callback_data=callback_data_home_button))
     for category in categories:
         callback_data_button = category_callback_data.new(type=f'{category_type}-{category}', action='edit')
         inline_message.add(types.InlineKeyboardButton(text=category, callback_data=callback_data_button))
-    callback_data_button = category_callback_data.new(type=category_type, action='add')
-    inline_message.add(types.InlineKeyboardButton(text='Добавить категорию', callback_data=callback_data_button))
-    callback_data_button = menu_callback_data.new(type='main_menu', action='show')
-    inline_message.add(types.InlineKeyboardButton(text='Главное меню', callback_data=callback_data_button))
-
     return inline_message
 
 

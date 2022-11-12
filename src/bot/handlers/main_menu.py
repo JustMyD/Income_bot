@@ -6,12 +6,12 @@ from aiogram import types, Dispatcher
 
 async def show_main_menu(message: types.Message):
     inline_message = make_main_menu_keyboard()
-    await message.answer(text='Выберите действие', reply_markup=inline_message)
+    await message.answer(text='Выберите действие:            &#x200D;', reply_markup=inline_message, parse_mode='HTML')
 
 
 async def show_main_menu_inline(query: types.CallbackQuery):
     inline_message = make_main_menu_keyboard()
-    await bot.edit_message_text(text='Выберите действие', chat_id=query.message.chat.id,
+    await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 
