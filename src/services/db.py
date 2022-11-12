@@ -24,13 +24,13 @@ def get_user_categories(user_id: int, categories_type: str) -> str:
             try:
                 if categories_type == 'income':
                     db_cursor.execute('''
-                    select categories_income from income_bot.users 
-                    where telegram_id = %s
+                    select categories_income from income_bot.user_categories
+                    where user_id = %s
                     ''', (str(user_id), ))
                 elif categories_type == 'expense':
                     db_cursor.execute('''
-                    select categories_expense from income_bot.users 
-                    where telegram_id = %s
+                    select categories_expense from income_bot.user_categories 
+                    where user_id = %s
                     ''', (str(user_id), ))
                 categories = db_cursor.fetchone()[0]
             except Exception as e:
@@ -54,11 +54,11 @@ async def update_user_categories(user_id: int, categories: str, categories_type:
             try:
                 if categories_type == 'income':
                     db_cursor.execute('''
-                    update income_bot.users set categories_income = %s where telegram_id = %s
+                    update income_bot.user_categories set categories_income = %s where user_id = %s
                     ''', (categories, str(user_id)))
                 elif categories_type == 'expense':
                     db_cursor.execute('''
-                    update income_bot.users set categories_expense = %s where telegram_id = %s
+                    update income_bot.user_categories set categories_expense = %s where user_id = %s
                     ''', (categories, str(user_id)))
                 categories_updated = True
             except Exception as e:
