@@ -30,5 +30,5 @@ async def send_feedback_to_owner(message: types.Message, state=FSMContext):
 
 def register_handlers_feedback(dp: Dispatcher):
     dp.register_callback_query_handler(start_getting_feedback,
-                                       menu_callback_data.filter(type='feedback', action='show'), state=None)
+                                       menu_callback_data.filter(type='feedback', action='send'), state=None)
     dp.register_message_handler(send_feedback_to_owner, state=FSMFeedback.feedback_start)

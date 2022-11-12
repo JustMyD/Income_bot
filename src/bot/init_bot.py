@@ -35,11 +35,6 @@ async def greet_new_user(message: types.Message):
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
-@dp.message_handler(commands='help')
-async def show_help(message: types.Message):
-    await message.answer(text=reference_msg)
-
-
 async def on_startup(dispatcher):
     await bot.set_webhook(WEBHOOK_HOST)
 
@@ -50,6 +45,5 @@ async def on_shutdown(dispatcher):
 
 intro_message = '''
 Для того чтобы открыть список команд бота воспользуйтесь кнопкой меню, она находится слева в строке ввода текста.
-Если вы столкнулись с трудностью - выберите /help чтобы посмотреть справку
-Если хотите оставить пожелание или дать обратную связь - выберите /feedback чтобы оставить анонимный отзыв 
+Оставить отзыв можно через главное меню 
 '''
