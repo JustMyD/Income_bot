@@ -87,7 +87,7 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
                     inline_message = categories_change_menu(user_categories, category_type=category_type)
                     user_categories = ', '.join(user_categories)
                     await update_user_categories(user_id=message.from_user.id, categories=user_categories,
-                                                 categories_type='expense')
+                                                 categories_type=category_type)
                     await bot.edit_message_text(text='Выберите категорию:', chat_id=message.chat.id,
                                                 message_id=data['main_message_id'], reply_markup=inline_message)
                 else:
