@@ -38,7 +38,7 @@ def categories_change_menu(categories: list, category_type: str) -> types.Inline
     callback_data_add_button = category_callback_data.new(type=category_type, name='new', action='add')
     callback_data_preferences_menu = menu_callback_data.new(type='preferences', action='show')
     inline_message.row(
-        types.InlineKeyboardButton(text='⬅️Назад', callback_data=callback_data_preferences_menu),
+        types.InlineKeyboardButton(text='🔙 Назад', callback_data=callback_data_preferences_menu),
         types.InlineKeyboardButton(text='➕ Добавить категорию', callback_data=callback_data_add_button)
     )
     for category in categories:
