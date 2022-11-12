@@ -74,14 +74,14 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
         category_type = data['category_type']
         user_categories = get_user_categories(message.from_user.id, categories_type=category_type)
         user_categories = user_categories.split(', ') if user_categories else []
-        if len(category_name) > 25:
-            if data.get('remove_msg'):
-                for elem in data.get('remove_msg'):
-                    await bot.delete_message(chat_id=message.chat.id, message_id=elem)
-            bot_message = await message.answer(text='Слишком длинное название категории, введите короче')
-            data['remove_msg'].append(bot_message.message_id)
-        elif user_categories:
-            if len(user_categories) < 10:
+        if user_categories:
+            if len(category_name) > 25:
+                if data.get('remove_msg'):
+                    for elem in data.get('remove_msg'):
+                        await bot.delete_message(chat_id=message.chat.id, message_id=elem)
+                bot_message = await message.answer(text='Слишком длинное название категории, введите короче')
+                data['remove_msg'].append(bot_message.message_id)
+            elif len(category_name) < 10:
                 if category_name not in user_categories:
                     user_categories.append(category_name)
                     inline_message = categories_change_menu(user_categories, category_type=category_type)
@@ -94,11 +94,38 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
                     repeat_category = await message.answer(text='Такая категория уже существует')
                     await asyncio.sleep(2)
                     await bot.delete_message(chat_id=message.chat.id, message_id=repeat_category.message_id)
-            elif len(user_categories) == 10:
+            elif len(category_name) == 10:
                 await message.answer(text='Нельзя добавить больше 10 категорий')
+
             await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
             await bot.delete_message(chat_id=message.chat.id, message_id=data['bot_message_id'])
             await state.finish()
+
+        # if len(category_name) > 25:
+        #     if data.get('remove_msg'):
+        #         for elem in data.get('remove_msg'):
+        #             await bot.delete_message(chat_id=message.chat.id, message_id=elem)
+        #     bot_message = await message.answer(text='Слишком длинное название категории, введите короче')
+        #     data['remove_msg'].append(bot_message.message_id)
+        # elif user_categories:
+        #     if len(user_categories) < 10:
+        #         if category_name not in user_categories:
+        #             user_categories.append(category_name)
+        #             inline_message = categories_change_menu(user_categories, category_type=category_type)
+        #             user_categories = ', '.join(user_categories)
+        #             await update_user_categories(user_id=message.from_user.id, categories=user_categories,
+        #                                          categories_type='expense')
+        #             await bot.edit_message_text(text='Выберите категорию:', chat_id=message.chat.id,
+        #                                         message_id=data['main_message_id'], reply_markup=inline_message)
+        #         else:
+        #             repeat_category = await message.answer(text='Такая категория уже существует')
+        #             await asyncio.sleep(2)
+        #             await bot.delete_message(chat_id=message.chat.id, message_id=repeat_category.message_id)
+        #     elif len(user_categories) == 10:
+        #         await message.answer(text='Нельзя добавить больше 10 категорий')
+        #     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
+        #     await bot.delete_message(chat_id=message.chat.id, message_id=data['bot_message_id'])
+        #     await state.finish()
 
 
 async def get_back_to_categories_menu(query: types.CallbackQuery, callback_data: dict):
