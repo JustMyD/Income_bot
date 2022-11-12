@@ -8,7 +8,7 @@ from bot.keyboards.keyboards_mapping import MONTHS_MAPPING
 
 menu_callback_data = CallbackData('menu', 'type', 'action')
 reports_callback_data = CallbackData('report', 'type', 'action', 'period')
-category_callback_data = CallbackData('category', 'type', 'action')
+category_callback_data = CallbackData('category', 'type', 'name', 'action')
 transaction_callback_data = CallbackData('transaction', 'type', 'amount', 'category')
 calendar_callback_data = CallbackData('calendar', 'type', 'period', 'value', 'action', 'phase', 'phase_1_value')
 
@@ -35,23 +35,22 @@ def categories_main_menu(categories: list, amount: str, transaction: str) -> typ
 
 def categories_change_menu(categories: list, category_type: str) -> types.InlineKeyboardMarkup:
     inline_message = types.InlineKeyboardMarkup()
-    callback_data_add_button = category_callback_data.new(type=category_type, action='add')
+    callback_data_add_button = category_callback_data.new(type=category_type, name='new', action='add')
     callback_data_home_button = menu_callback_data.new(type='main_menu', action='show')
     inline_message.row(types.InlineKeyboardButton(text='➕Добавить категорию', callback_data=callback_data_add_button),
                        types.InlineKeyboardButton(text='🏡Главное меню', callback_data=callback_data_home_button))
     for category in categories:
-        callback_data_button = category_callback_data.new(type=f'{category_type}-{category}', action='edit')
+        callback_data_button = category_callback_data.new(type=category_type, name=category, action='edit')
         inline_message.add(types.InlineKeyboardButton(text=category, callback_data=callback_data_button))
     return inline_message
 
 
 def category_edit_menu(category_name: str, category_type: str) -> types.InlineKeyboardMarkup:
+    callback_data_remove = category_callback_data.new(type=category_type, name=category_name, action='remove')
+    callback_data_back = category_callback_data.new(type=category_type, name='empty', action='back')
     inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text='Удалить категорию',
-                                    callback_data=category_callback_data.new(type=f'{category_type}-{category_name}',
-                                                                             action='remove'))],
-        [types.InlineKeyboardButton(text='Назад',
-                                    callback_data=category_callback_data.new(type=category_type, action='back'))]
+        [types.InlineKeyboardButton(text='Удалить категорию', callback_data=callback_data_remove)],
+        [types.InlineKeyboardButton(text='Назад', callback_data=callback_data_back)]
     ])
     return inline_message
 
