@@ -33,7 +33,7 @@ async def send_feedback_to_owner(message: types.Message, state=FSMContext):
     inline_message = make_main_menu_keyboard()
     chat_id = message.chat.id
     async with state.proxy() as data:
-        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=chat_id,
+        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=chat_id, parse_mode='HTML',
                                     message_id=data['main_message'], reply_markup=inline_message)
     await bot.delete_message(chat_id=chat_id, message_id=message.message_id)
     await asyncio.sleep(2)
