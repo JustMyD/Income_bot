@@ -202,6 +202,30 @@ async def get_today_reports_test(user_id: int) -> dict:
     # df.to_html(buf='tmp.html', encoding='utf-8', index=False)
 
 
+async def get_category_short_report(user_id: str, report_type: str) -> str:
+    with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
+                    host=DB_CONN['db_host'], port=DB_CONN['db_port'],
+                    cursor_factory=ps.extras.RealDictCursor) as db_connect:
+        with db_connect.cursor() as db_cursor:
+            if report_type == 'income':
+                db_cursor.execute('''
+                            select income_sum from income_bot.all_income
+                            where user_id = %s
+                            ''', (user_id, ))
+                msg_template = 'Всего внесено дохода: {}'
+            elif report_type == 'expense':
+                db_cursor.execute('''
+                            select expense_sum from income_bot.all_expense
+                            where user_id = %s
+                            ''', (user_id,))
+                msg_template = 'Всего внесено расхода: {}'
+            result = db_cursor.fetchall()
+            average_sum = sum((int(expense[f'{report_type}_sum']) for expense in result))
+            msg_template = msg_template.format(average_sum)
+
+            return msg_template
+
+
 async def get_today_report(user_id: str, report_type: str, msg_template: str):
     with ps.connect(database=DB_CONN['db_name'], user=DB_CONN['db_user'], password=DB_CONN['db_pass'],
                     host=DB_CONN['db_host'], port=DB_CONN['db_port'], cursor_factory=ps.extras.RealDictCursor) as db_connect:

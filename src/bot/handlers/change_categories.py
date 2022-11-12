@@ -5,7 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 
 from bot.keyboards.inline_keyboards import menu_callback_data, categories_change_menu, category_callback_data
-from services.db import get_user_categories, update_user_categories
+from services.db import get_user_categories, update_user_categories, get_category_short_report
 from bot.keyboards.inline_keyboards import category_edit_menu
 from bot.init_bot import bot
 
@@ -29,13 +29,16 @@ async def callback_show_categories_change_menu(query: types.CallbackQuery, callb
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 
-async def callback_edit_expense_category(query: types.CallbackQuery, callback_data: dict):
+async def callback_edit_category(query: types.CallbackQuery, callback_data: dict):
     category_data = callback_data.get('type')
     if category_data:
         category_type = category_data.split('-')[0]
         category_name = category_data.split('-')[1]
     inline_message = category_edit_menu(category_name, category_type=category_type)
-    await bot.edit_message_text(text=f"Категория - {category_name}", chat_id=query.message.chat.id,
+    out_msg = f'Категория - {category_name}\n'
+    report = get_category_short_report(user_id=query.from_user.id, report_type=category_type)
+    out_msg += report
+    await bot.edit_message_text(text=out_msg, chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
 
 
@@ -120,7 +123,7 @@ async def get_back_to_categories_menu(query: types.CallbackQuery, callback_data:
 
 def register_change_categories_handlers(dp: Dispatcher):
     dp.register_callback_query_handler(callback_show_categories_change_menu, menu_callback_data.filter(type='categories'))
-    dp.register_callback_query_handler(callback_edit_expense_category, category_callback_data.filter(action='edit'))
+    dp.register_callback_query_handler(callback_edit_category, category_callback_data.filter(action='edit'))
     dp.register_callback_query_handler(callback_remove_category, category_callback_data.filter(action='remove'))
     dp.register_callback_query_handler(get_back_to_categories_menu, category_callback_data.filter(action='back'))
 
