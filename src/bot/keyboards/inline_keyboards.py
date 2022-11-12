@@ -15,9 +15,9 @@ calendar_callback_data = CallbackData('calendar', 'type', 'period', 'value', 'ac
 
 def make_main_menu_keyboard() -> types.InlineKeyboardMarkup:
     inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
-        [types.InlineKeyboardButton(text='Получил 💵➕💵',
+        [types.InlineKeyboardButton(text='Получил    ➕',
                                     callback_data=menu_callback_data.new(type='income', action='show')),
-         types.InlineKeyboardButton(text='Потратил 💸➖💸',
+         types.InlineKeyboardButton(text='Потратил    ➖',
                                     callback_data=menu_callback_data.new(type='expense', action='show'))],
         [types.InlineKeyboardButton(text='Настройки ⚙',
                                     callback_data=menu_callback_data.new(type='preferences', action='show'))]
