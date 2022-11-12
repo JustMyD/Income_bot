@@ -23,7 +23,7 @@ async def send_feedback_to_owner(message: types.Message, state=FSMContext):
     subject = 'Отзыв пользователя от бота Приход/Расход'
     body = message.text
     async with yagmail.SMTP(BOT_EMAIL_USERNAME, oauth2_file='/home/www/Bot_projects/Income_bot/src/config/oauth_creds.json') as mail:
-       mail.send(to=to, subject=subject, contents=body)
+        mail.send(to=to, subject=subject, contents=body)
     await message.answer(text='Спасибо за ваш отзыв!')
     await state.finish()
 
