@@ -135,12 +135,16 @@ async def get_free_report_end_date(query: types.CallbackQuery, callback_data: di
     report = await get_free_period_report(user_id=str(user_id), report_type=report_type,
                                           msg_template=free_report_template, period_start=period_from,
                                           period_end=period_to)
-    inline_message = make_main_menu_keyboard()
-    await bot.edit_message_text(text='Выберите действие', chat_id=query.message.chat.id,
+    inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
+        [types.InlineKeyboardButton(text='Главное меню', callback_data=menu_callback_data.new(type='main_menu',
+                                                                                              action='show'))]
+    ])
+    # inline_message = make_main_menu_keyboard()
+    await bot.edit_message_text(text=report, chat_id=query.message.chat.id,
                                 message_id=query.message.message_id, reply_markup=inline_message)
-    bot_message = await query.message.answer(text='Ожидайте')
-    await asyncio.sleep(2)
-    await bot.edit_message_text(text=report, chat_id=query.message.chat.id, message_id=bot_message.message_id)
+    # bot_message = await query.message.answer(text='Ожидайте')
+    # await asyncio.sleep(2)
+    # await bot.edit_message_text(text=report, chat_id=query.message.chat.id, message_id=bot_message.message_id)
 
 
 async def handle_empty_calendar_button(query: types.CallbackQuery):

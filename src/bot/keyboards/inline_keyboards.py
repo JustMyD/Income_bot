@@ -74,12 +74,12 @@ def make_report_type_inline_message():
 
 def make_report_period_inline_message(report_type: str):
     inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
-        {types.InlineKeyboardButton(text='Отчет за сегодня',
+        [types.InlineKeyboardButton(text='Отчет за сегодня',
                                     callback_data=reports_callback_data.new(type=report_type, action='show',
                                                                             period='today')),
          types.InlineKeyboardButton(text='Отчет за неделю',
                                     callback_data=reports_callback_data.new(type=report_type, action='show',
-                                                                            period='week'))},
+                                                                            period='week'))],
         [types.InlineKeyboardButton(text='Отчет за месяц',
                                     callback_data=reports_callback_data.new(type=report_type, action='show',
                                                                             period='month')),
