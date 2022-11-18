@@ -35,11 +35,6 @@ async def greet_new_user(message: types.Message):
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
-@dp.message_handler(commands='test')
-async def test(message: types.Message):
-    await message.answer(text=message.chat.id)
-
-
 async def on_startup(dispatcher):
     await bot.set_webhook(WEBHOOK_HOST)
 

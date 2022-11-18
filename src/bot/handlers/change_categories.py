@@ -1,5 +1,6 @@
 import asyncio
 import logging
+import os
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
@@ -10,9 +11,9 @@ from services.db import get_user_categories, update_user_categories, get_categor
 from bot.keyboards.inline_keyboards import category_edit_menu
 from bot.init_bot import bot
 
-logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'logs/error_logs.log'))
+logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../logs/error_logs.log'))
 
-logging.basicConfig(filename=logs_path, encoding='utf-8', format='%(asctime)s | %(levelname)s: %(message)s', level=logging.ERROR)
+logging.basicConfig(filename=logs_path, format='%(asctime)s | %(levelname)s: %(message)s', level=logging.ERROR)
 
 
 class FSMExpenseCategoryAdd(StatesGroup):
