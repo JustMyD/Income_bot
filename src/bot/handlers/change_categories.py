@@ -12,7 +12,6 @@ from bot.keyboards.inline_keyboards import category_edit_menu
 from bot.init_bot import bot
 
 logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../../logs/error_logs.log'))
-
 logging.basicConfig(filename=logs_path, format='%(asctime)s | %(levelname)s: %(message)s', level=logging.ERROR)
 
 
@@ -25,24 +24,36 @@ class FSMExpenseCategoryRename(StatesGroup):
 
 
 async def callback_show_categories_change_menu(query: types.CallbackQuery, callback_data: dict):
-    categories_type = callback_data.get('action')
-    user_categories = get_user_categories(query.from_user.id, categories_type=categories_type)
-    user_categories = user_categories.split(', ') if user_categories else []
-    if not user_categories:
-        print("Doesn't have any category")
-    inline_message = categories_change_menu(user_categories, category_type=categories_type)
-    await bot.edit_message_text(text='Выберите категорию:                        &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML', message_id=query.message.message_id, reply_markup=inline_message)
+    try:
+        categories_type = callback_data.get('action')
+        user_categories = get_user_categories(query.from_user.id, categories_type=categories_type)
+        user_categories = user_categories.split(', ') if user_categories else []
+        if not user_categories:
+            print("Doesn't have any category")
+        inline_message = categories_change_menu(user_categories, category_type=categories_type)
+        await bot.edit_message_text(text='Выберите категорию:                        &#x200D;',
+                                    chat_id=query.message.chat.id, parse_mode='HTML',
+                                    message_id=query.message.message_id, reply_markup=inline_message)
+    except Exception as e:
+        logging.error(f'User id {query.from_user.id}:\n{e}')
+        feedback_chat_id = '-549732055'
+        await bot.send_message(text=e, chat_id=feedback_chat_id)
 
 
 async def callback_edit_category(query: types.CallbackQuery, callback_data: dict):
-    category_type = callback_data.get('type')
-    category_name = callback_data.get('name')
-    inline_message = category_edit_menu(category_name, category_type=category_type)
-    out_msg = f'Категория - {category_name}\n'
-    report = await get_category_short_report(user_id=str(query.from_user.id), report_type=category_type, category_name=category_name)
-    out_msg += report
-    await bot.edit_message_text(text=out_msg, chat_id=query.message.chat.id,
-                                message_id=query.message.message_id, reply_markup=inline_message)
+    try:
+        category_type = callback_data.get('type')
+        category_name = callback_data.get('name')
+        inline_message = category_edit_menu(category_name, category_type=category_type)
+        out_msg = f'Категория - {category_name}\n'
+        report = await get_category_short_report(user_id=str(query.from_user.id), report_type=category_type, category_name=category_name)
+        out_msg += report
+        await bot.edit_message_text(text=out_msg, chat_id=query.message.chat.id,
+                                    message_id=query.message.message_id, reply_markup=inline_message)
+    except Exception as e:
+        logging.error(f'User id {query.from_user.id}:\n{e}')
+        feedback_chat_id = '-549732055'
+        await bot.send_message(text=e, chat_id=feedback_chat_id)
 
 
 async def callback_remove_category(query: types.CallbackQuery, callback_data: dict):

@@ -5,9 +5,13 @@ import psycopg2.extras
 from sqlalchemy import create_engine
 import pandas as pd
 import os
+import logging
 import datetime as dt
 
 from config.configuration import DB_CONN
+
+logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), '../logs/error_logs.log'))
+logging.basicConfig(filename=logs_path, format='%(asctime)s | %(levelname)s: %(message)s', level=logging.ERROR)
 
 
 def get_user_categories(user_id: int, categories_type: str) -> str:
@@ -34,7 +38,7 @@ def get_user_categories(user_id: int, categories_type: str) -> str:
                     ''', (str(user_id), ))
                 categories = db_cursor.fetchone()[0]
             except Exception as e:
-                print(e)
+                logging.error(f'User id {user_id}:\n{e}')
 
     return categories
 
@@ -62,7 +66,7 @@ async def update_user_categories(user_id: int, categories: str, categories_type:
                     ''', (categories, str(user_id)))
                 categories_updated = True
             except Exception as e:
-                print(e)  # ToDo logger
+                logging.error(f'User id {user_id}:\n{e}')
 
     return categories_updated
 
@@ -90,7 +94,7 @@ async def add_new_income(user_id: str, income_sum: int, category: str):
                 ''', (user_id, category))
                 today_user_incomes = db_cursor.fetchone()
             except Exception as e:
-                print(e)             # todo ДОбавить логер
+                logging.error(f'User id {user_id}:\n{e}')
                 result = 'Произошла ошибка, попробуйте снова'
 
             if today_user_incomes:
@@ -102,7 +106,7 @@ async def add_new_income(user_id: str, income_sum: int, category: str):
                     ''', (income_sum, current_date_time, user_id, category))
                     result = 'Добавлен'
                 except Exception as e:
-                    print(e)             # todo ДОбавить логер
+                    logging.error(f'User id {user_id}:\n{e}')
                     result = 'Произошла ошибка, попробуйте снова'
             else:
                 try:
@@ -112,7 +116,7 @@ async def add_new_income(user_id: str, income_sum: int, category: str):
                     """, (user_id, income_sum, category, current_date_time, current_date_time))
                     result = 'Добавлен'
                 except Exception as e:
-                    print(e)         # todo ДОбавить логер
+                    logging.error(f'User id {user_id}:\n{e}')
                     result = 'Произошла ошибка, попробуйте снова'
     return result
 
@@ -140,7 +144,7 @@ async def add_new_expense(user_id: str, expense_sum: int, category: str):
                 ''', (user_id, category))
                 today_user_expense = db_cursor.fetchone()
             except Exception as e:
-                print(e)           # todo Добавить логер
+                logging.error(f'User id {user_id}:\n{e}')
                 result = 'Произошла ошибка, попробуйте снова'
 
             if today_user_expense:
@@ -152,7 +156,7 @@ async def add_new_expense(user_id: str, expense_sum: int, category: str):
                     ''', (expense_sum, current_date_time, user_id, category))
                     result = 'Добавлен'
                 except Exception as e:
-                    print(e)          # todo ДОбавить логер
+                    logging.error(f'User id {user_id}:\n{e}')
                     result = 'Произошла ошибка, попробуйте снова'
             else:
                 try:
@@ -162,7 +166,7 @@ async def add_new_expense(user_id: str, expense_sum: int, category: str):
                     """, (user_id, expense_sum, category, current_date_time, current_date_time))
                     result = 'Добавлен'
                 except Exception as e:
-                    print(e)            # todo Добавить логер
+                    logging.error(f'User id {user_id}:\n{e}')
                     result = 'Произошла ошибка, попробуйте снова'
     return result
 

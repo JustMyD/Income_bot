@@ -22,7 +22,7 @@ dp = Dispatcher(bot, storage=storage)
 
 @dp.message_handler(commands='start')
 async def greet_new_user(message: types.Message):
-    user_added = user.append_new_user(message.from_user)
+    user_added = user.append_new_user(str(message.from_user.id), message.from_user.full_name, message.from_user.username)
     if user_added == 'Ошибка':
         greeting_message = 'Не удалось сохранить из-за ошибки, попробуйте снова позже'
     elif user_added == 'Пользователь уже в базе':
