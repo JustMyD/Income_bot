@@ -44,7 +44,13 @@ def append_new_user(user_data: base.TelegramObject) -> bool:
                     db_cursor.execute('''
                     insert into income_bot.users (telegram_id, full_name, user_name)
                     values (%s, %s, %s)
-                    ''', (user_data.id, user_data.full_name, user_data.username))
+                    ''', (str(user_data.id), user_data.full_name, user_data.username))
+
+                    db_cursor.execute('''
+                    insert into income_bot.user_categories (user_id)
+                    values (%s)
+                    ''', (str(user_data.id), ))
+
                     result = 'Пользователь добавлен'
                 except Exception as e:
                     result = 'Ошибка' 

@@ -5,6 +5,7 @@ from aiogram.dispatcher import FSMContext
 from aiogram.dispatcher.filters.state import State, StatesGroup
 from aiogram.dispatcher.filters import Text
 
+from bot.keyboards.inline_keyboards import menu_callback_data
 from bot.keyboards.keyboards_mapping import REPLY_KEYBOARDS_MSGS
 
 
@@ -13,8 +14,8 @@ class FSMLimits(StatesGroup):
     limit_state_period_value = State()
 
 
-async def limits_state_start(message: types.Message):
-    await message.answer(text='В разработке')
+async def limits_state_start(query: types.CallbackQuery):
+    await query.answer(text='В разработке', show_alert=True)
     # await FSMLimits.limit_period.set()
     # keyboard = make_keyboard_reply('Лимиты')
     # await message.answer(text='Здесь вы можете установить лимиты (необязательно)', reply_markup=keyboard)
@@ -41,6 +42,7 @@ async def limits_state_period_value(message: types.Message, state=FSMContext):
 
 
 def register_handlers_limits(dp: Dispatcher):
-    dp.register_message_handler(limits_state_start, Text('Лимиты'), state=None)
+    dp.register_callback_query_handler(limits_state_start, menu_callback_data.filter(type='limits', action='show'))
+    # dp.register_message_handler(limits_state_start, Text('Лимиты'), state=None)
     # dp.register_message_handler(limits_state_period, state=FSMLimits.limit_period)
     # dp.register_message_handler(limits_state_period_value, state=FSMLimits.limit_state_period_value)

@@ -23,11 +23,13 @@ async def start_getting_feedback(query: types.CallbackQuery, state: FSMContext):
 
 
 async def send_feedback_to_owner(message: types.Message, state=FSMContext):
-    to = 'commonqued@gmail.com'
-    subject = 'Отзыв пользователя от бота Приход/Расход'
-    body = message.text
-    with yagmail.SMTP(BOT_EMAIL_USERNAME, oauth2_file='/home/www/Bot_projects/Income_bot/src/config/oauth_creds.json') as mail:
-        mail.send(to=to, subject=subject, contents=body)
+#    to = 'commonqued@gmail.com'
+#    subject = 'Отзыв пользователя от бота Приход/Расход'
+#    body = message.text
+#    with yagmail.SMTP(BOT_EMAIL_USERNAME, oauth2_file='/home/www/Bot_projects/Income_bot/src/config/oauth_creds.json') as mail:
+#        mail.send(to=to, subject=subject, contents=body)
+    feedback_chat_id = '-549732055'
+    await bot.forward_message(chat_id=feedback_chat_id, from_chat_id=message.chat.id, message_id=message.message_id)
     bot_message = await message.answer(text='Спасибо за ваш отзыв!')
     await asyncio.sleep(1)
     inline_message = make_main_menu_keyboard()

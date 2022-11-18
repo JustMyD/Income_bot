@@ -1,4 +1,5 @@
 import asyncio
+import logging
 
 from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
@@ -8,6 +9,10 @@ from bot.keyboards.inline_keyboards import menu_callback_data, categories_change
 from services.db import get_user_categories, update_user_categories, get_category_short_report
 from bot.keyboards.inline_keyboards import category_edit_menu
 from bot.init_bot import bot
+
+logs_path = os.path.normpath(os.path.join(os.path.dirname(__file__), 'logs/error_logs.log'))
+
+logging.basicConfig(filename=logs_path, encoding='utf-8', format='%(asctime)s | %(levelname)s: %(message)s', level=logging.ERROR)
 
 
 class FSMExpenseCategoryAdd(StatesGroup):
@@ -25,8 +30,7 @@ async def callback_show_categories_change_menu(query: types.CallbackQuery, callb
     if not user_categories:
         print("Doesn't have any category")
     inline_message = categories_change_menu(user_categories, category_type=categories_type)
-    await bot.edit_message_text(text='Выберите категорию:                        &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
-                                message_id=query.message.message_id, reply_markup=inline_message)
+    await bot.edit_message_text(text='Выберите категорию:                        &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML', message_id=query.message.message_id, reply_markup=inline_message)
 
 
 async def callback_edit_category(query: types.CallbackQuery, callback_data: dict):
@@ -61,7 +65,7 @@ async def callback_add_new_category_start(query: types.CallbackQuery, callback_d
     async with state.proxy() as data:
         data['bot_message_id'] = message.message_id
         data['main_message_id'] = query.message.message_id
-        data['remove_msg'] = []
+        data['remove_msg'] = '' 
         data['category_type'] = category_type
 
 
@@ -69,15 +73,15 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
     category_name = message.text
     category_name = category_name.replace(',', ';')
     async with state.proxy() as data:
+        if data.get('remove_msg'):
+            await bot.delete_message(chat_id=message.chat.id, message_id=data['remove_msg'])
         category_type = data['category_type']
         user_categories = get_user_categories(message.from_user.id, categories_type=category_type)
         user_categories = user_categories.split(', ') if user_categories else []
-        if len(category_name) > 25:
-            if data.get('remove_msg'):
-                for elem in data.get('remove_msg'):
-                    await bot.delete_message(chat_id=message.chat.id, message_id=elem)
-            bot_message = await message.answer(text='Слишком длинное название категории, введите короче')
-            data['remove_msg'].append(bot_message.message_id)
+        if len(category_name) > 20:
+            bot_message = await message.answer(text='Слишком длинное название категории')
+            await asyncio.sleep(2)
+            await bot.delete_message(chat_id=bot_message.chat.id, message_id=bot_message.message_id)
         elif len(user_categories) < 10:
             if category_name not in user_categories:
                 user_categories.append(category_name)
@@ -92,8 +96,9 @@ async def callback_add_new_category_end(message: types.Message, state: FSMContex
                 await asyncio.sleep(2)
                 await bot.delete_message(chat_id=message.chat.id, message_id=repeat_category.message_id)
         elif len(user_categories) == 10:
-            await message.answer(text='Нельзя добавить больше 10 категорий')
-
+            categories_limit = await message.answer(text='Нельзя добавить больше 10 категорий')
+            await asyncio.sleep(2)
+            await bot.delete_message(chat_id=categories_limit.chat.id, message_id=categories_limit.message_id)
         await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
         await bot.delete_message(chat_id=message.chat.id, message_id=data['bot_message_id'])
         await state.finish()

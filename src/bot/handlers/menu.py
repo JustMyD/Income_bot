@@ -32,12 +32,12 @@ async def show_main_menu_inline(query: types.CallbackQuery):
 async def callback_show_preferences_menu(query: types.CallbackQuery):
     inline_message = types.InlineKeyboardMarkup(inline_keyboard=[
         [types.InlineKeyboardButton(text='Отчеты', callback_data=menu_callback_data.new(type='reports',
-                                                                                        action='show'))],
-        [types.InlineKeyboardButton(text='Лимиты', callback_data=menu_callback_data.new(type='limits',
+                                                                                        action='show')),
+         types.InlineKeyboardButton(text='Лимиты', callback_data=menu_callback_data.new(type='limits',
                                                                                         action='show'))],
         [types.InlineKeyboardButton(text='Категории прихода', callback_data=menu_callback_data.new(type='categories',
-                                                                                                   action='income'))],
-        [types.InlineKeyboardButton(text='Категории расходов', callback_data=menu_callback_data.new(type='categories',
+                                                                                                   action='income')),
+         types.InlineKeyboardButton(text='Категории расходов', callback_data=menu_callback_data.new(type='categories',
                                                                                                     action='expense'))],
         [types.InlineKeyboardButton(text='Главное меню', callback_data=menu_callback_data.new(type='main_menu',
                                                                                               action='show'))],

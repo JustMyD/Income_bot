@@ -11,19 +11,23 @@ from bot.keyboards.inline_keyboards import make_year_calendar, make_month_calend
 
 from services.db import get_today_report, get_weekly_report, get_monthly_report, get_free_period_report
 
-today_report_template = 'Всего {kind} за сегодня: '
+today_report_template = 'Всего {kind} за сегодня: {average_sum}\n'
 
-weekly_report_template = 'Всего {kind} за неделю: '
+weekly_report_template = 'Всего {kind} за неделю: {average_sum}\n'
 
-monthly_report_template = 'Всего {kind} за месяц: '
+monthly_report_template = 'Всего {kind} за месяц: {average_sum}\n'
 
-free_report_template = 'Всего {kind} за выбранный период: '
+free_report_template = '''
+Период {start} - {end}
+
+Всего {kind} {average_sum}
+'''
 
 
 async def show_report_type_message(query: types.CallbackQuery):
     inline_message = make_report_type_inline_message()
-    await bot.edit_message_text(text='Выберите тип отчета', chat_id=query.message.chat.id,
-                                message_id=query.message.message_id, reply_markup=inline_message)
+    await bot.edit_message_text(text='Выберите тип отчета                     &#x200D;', chat_id=query.message.chat.id,
+                                message_id=query.message.message_id, reply_markup=inline_message, parse_mode='HTML')
 
 
 async def show_report_period_message(query: types.CallbackQuery, callback_data: dict):
@@ -31,7 +35,7 @@ async def show_report_period_message(query: types.CallbackQuery, callback_data: 
     report_message = 'прихода' if report_type == 'income' else 'расхода'
     inline_message = make_report_period_inline_message(report_type)
     await bot.edit_message_text(text=f'Выберите период для {report_message}', chat_id=query.message.chat.id,
-                                message_id=query.message.message_id, reply_markup=inline_message)
+                                message_id=query.message.message_id, reply_markup=inline_message, parse_mode='HTML')
 
 
 async def show_today_report(query: types.CallbackQuery, callback_data: dict):
@@ -44,11 +48,11 @@ async def show_today_report(query: types.CallbackQuery, callback_data: dict):
             [types.InlineKeyboardButton(text='Главное меню', callback_data=callback_data_home_button)]
         ])
         await bot.edit_message_text(text=report, chat_id=query.message.chat.id, message_id=query.message.message_id,
-                                    reply_markup=inline_message)
+                                    reply_markup=inline_message, parse_mode='HTML')
     else:
         await query.answer(text='Произошла ошибка, попробуйте еще раз', show_alert=True)
         inline_message = make_main_menu_keyboard()
-        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id,
+        await bot.edit_message_text(text='Выберите действие:                      &#x200D;', chat_id=query.message.chat.id,
                                     message_id=query.message.message_id, reply_markup=inline_message, parse_mode='HTML')
 
 
@@ -62,11 +66,11 @@ async def show_weekly_report(query: types.CallbackQuery, callback_data: dict):
             [types.InlineKeyboardButton(text='Главное меню', callback_data=callback_data_home_button)]
         ])
         await bot.edit_message_text(text=report, chat_id=query.message.chat.id, message_id=query.message.message_id,
-                                    reply_markup=inline_message)
+                                    reply_markup=inline_message, parse_mode='HTML')
     else:
         await query.answer(text='Произошла ошибка, попробуйте еще раз', show_alert=True)
         inline_message = make_main_menu_keyboard()
-        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id,
+        await bot.edit_message_text(text='Выберите действие:                      &#x200D;', chat_id=query.message.chat.id,
                                     message_id=query.message.message_id, reply_markup=inline_message, parse_mode='HTML')
 
 
@@ -81,11 +85,11 @@ async def show_monthly_report(query: types.CallbackQuery, callback_data: dict):
             [types.InlineKeyboardButton(text='Главное меню', callback_data=callback_data_home_button)]
         ])
         await bot.edit_message_text(text=report, chat_id=query.message.chat.id, message_id=query.message.message_id,
-                                    reply_markup=inline_message)
+                                    reply_markup=inline_message, parse_mode='HTML')
     else:
         await query.answer(text='Произошла ошибка, попробуйте еще раз', show_alert=True)
         inline_message = make_main_menu_keyboard()
-        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id,
+        await bot.edit_message_text(text='Выберите действие:                      &#x200D;', chat_id=query.message.chat.id,
                                     message_id=query.message.message_id, reply_markup=inline_message, parse_mode='HTML')
 
 
@@ -140,7 +144,7 @@ async def get_free_report_end_date(query: types.CallbackQuery, callback_data: di
                                                                                               action='show'))]
     ])
     # inline_message = make_main_menu_keyboard()
-    await bot.edit_message_text(text=report, chat_id=query.message.chat.id,
+    await bot.edit_message_text(text=report, chat_id=query.message.chat.id, parse_mode='HTML',
                                 message_id=query.message.message_id, reply_markup=inline_message)
     # bot_message = await query.message.answer(text='Ожидайте')
     # await asyncio.sleep(2)
