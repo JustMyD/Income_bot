@@ -35,6 +35,11 @@ async def greet_new_user(message: types.Message):
     await bot.delete_message(chat_id=message.chat.id, message_id=message.message_id)
 
 
+@dp.message_handler(commands='test')
+async def test_tmp(message: types.Message):
+    user_added = user.append_new_user(str(message.from_user.id), message.from_user.full_name, message.from_user.username)
+
+
 async def on_startup(dispatcher):
     await bot.set_webhook(WEBHOOK_HOST)
 

@@ -27,6 +27,7 @@ def new_user(user_id: str) -> bool:
             except Exception as e:
                 logging.error(f'User id {user_id}:\n{e}')
             users = (row[0] for row in users)
+            print(users.__sizeof__())
             result = False if user_id in users else True
 
     return result
