@@ -25,8 +25,12 @@ async def show_main_menu(message: types.Message):
 
 async def show_main_menu_inline(query: types.CallbackQuery):
     inline_message = make_main_menu_keyboard()
-    await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
-                                message_id=query.message.message_id, reply_markup=inline_message)
+    try:
+        await bot.edit_message_text(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
+                                    message_id=query.message.message_id, reply_markup=inline_message)
+    except:
+        await bot.send_message(text='Выберите действие:            &#x200D;', chat_id=query.message.chat.id,parse_mode='HTML',
+                reply_markup=inline_message)
 
 
 async def callback_show_preferences_menu(query: types.CallbackQuery):
@@ -42,8 +46,12 @@ async def callback_show_preferences_menu(query: types.CallbackQuery):
         [types.InlineKeyboardButton(text='Главное меню', callback_data=menu_callback_data.new(type='main_menu',
                                                                                               action='show'))],
     ])
-    await bot.edit_message_text(text='Что хотите изменить:          &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
-                                message_id=query.message.message_id, reply_markup=inline_message)
+    try:
+        await bot.edit_message_text(text='Что хотите изменить:          &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
+                                    message_id=query.message.message_id, reply_markup=inline_message)
+    except:
+        await bot.send_message(text='Что хотите изменить:          &#x200D;', chat_id=query.message.chat.id, parse_mode='HTML',
+                               reply_markup=inline_message)  
 
 
 async def callback_show_help(query: types.CallbackQuery):
@@ -51,8 +59,11 @@ async def callback_show_help(query: types.CallbackQuery):
         [types.InlineKeyboardButton(text='Главное меню', callback_data=menu_callback_data.new(type='main_menu',
                                                                                               action='show'))]
     ])
-    await bot.edit_message_text(text=reference_msg, chat_id=query.message.chat.id, message_id=query.message.message_id,
-                                reply_markup=inline_message)
+    try:
+        await bot.edit_message_text(text=reference_msg, chat_id=query.message.chat.id, message_id=query.message.message_id,
+                                    reply_markup=inline_message)
+    except:
+        await bot.send_message(text=reference_msg, chat_id=query.message.chat_id, reply_markup=inline_message)
 
 
 def register_handlers_main_menu(dp: Dispatcher):
